@@ -67,13 +67,14 @@ void Complex::add(const Complex &num)
 
 void Complex::multiply(const Complex &num)
 {
-    int a = real;
-    int b = imag;
     int c = num.getReal();
     int d = num.getImag();
 
-    real = (a*c - b*d);
-    imag = (b*c + a*d);
+    int a = (real*c - imag*d);
+    int b = (imag*c + real*d);
+
+    real = a;
+    imag = b;
 }
 
 bool Complex::areEqual(const Complex &num) const
