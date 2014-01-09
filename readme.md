@@ -1,6 +1,6 @@
-EECE3326, Optimization Methods
-Professor Meleis
+EECE3326, Optimization Methods  
+Professor Meleis  
 Spring 2014
 
-Mark Mossberg
+Mark Mossberg  
 Yufeng Wang
