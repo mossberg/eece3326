@@ -91,13 +91,6 @@ bool Complex<T>::areEqual(const Complex &num) const
     } else {
         return false;
     }
-
-    /* if (real != num.getReal()) */
-    /*     return false; */
-    /* else if (imag != num.getImag()) */
-    /*     return false; */
-    /* else */
-    /*     return true; */
 }
 
 template <typename T>
