@@ -1,14 +1,24 @@
-#include <vector>   //datatype for storing secret code
+/* Mark Mossberg, Yufeng Wang
+ * 1/16/14
+ *
+ * Contains Code class and main (test) function.
+ *
+ * Compiled on Mac OS X 10.9 using g++ compiler.
+ * $ g++ -o program program.cpp -Wall
+ */
+
+#include <vector>
 #include <iostream>
-#include "d_random.h"
+#include "d_random.h" // provided
 
 using namespace std;
 
 class Code
+// Class declaration for secret code
 {
 public:
     Code(int n, int m);
-    int checkCorrect(const vector<int> &g);
+    int checkCorrect(const vector<int> &g) const;
     void printKey() const;
     vector<int> guess();
 
@@ -16,13 +26,19 @@ private:
     vector<int> key;
     int length;
     int range;
-    //int numTries;
 };
 
-Code::Code(int n, int m)
-    : length(n)
+
+Code::Code(int n, int m) : length(n)
+// Constructor for Code class
+// - Inputs:
+//      n: secret code length
+//      m: range of each digit in key
+// - Initializes the private length variable using initialization list
+// - Checks range input before setting private range variable
+// - Initializes the secret code using provided random number generator
 {
-    randomNumber rnd(time(NULL));
+    randomNumber rnd(time(0));
 
     // check that m <= 10 and >=0
     if (m <= 10 && m >= 0)
@@ -35,22 +51,35 @@ Code::Code(int n, int m)
     }
 }
 
-int Code::checkCorrect(const vector<int> &g)
+
+int Code::checkCorrect(const vector<int> &g) const
+// Compares guess to secret code
+// - Inputs:
+//      g: vector containing guess
+// - Output:
+//      returns integer that specifies number of correct digits in correct
+//      place
 {
-    //right digit in the right place
     int numRight = 0;
 
     // loop through key and vector and compare each value
     for (int i = 0; i < length; i++)
     {
         if (key[i] == g[i])
-        numRight++;
+            numRight++;
     }
 
     return numRight;
 }
 
+
 vector<int> Code::guess()
+// Asks for guess from user from keyboard
+// - Inputs: None
+// - Outputs:
+//      returns vector containing user's guess
+// - Used local variable to store each guess and push into guess vector using
+//   a loop
 {
     vector<int> guess;
     int currentGuess;
@@ -69,8 +98,10 @@ vector<int> Code::guess()
 }
 
 
-
 void Code::printKey() const
+// Prints out secret code to screen
+// - Inputs: none
+// - Outputs: none
 {
     for (int i = 0; i < length; i++)
         cout << key[i] << ' ';
@@ -80,37 +111,29 @@ void Code::printKey() const
 
 
 int main()
+// Test function for Code class
+// - Initializes a Code object
+// - Displays secret code
+// - allows user 4 tries to guess, printing out number of correct digits in
+//   each guess
 {
 
     int n, m, feedback;
+    n = 3; // hardcoded code length for testing
+    m = 3; // hardcoded code range for testing
 
-    //ask for length and range
-    //cout << “Secret code length: “;
-    //cin >> n;
-    n = 3; // dummy
-
-    //cout << “Range of digits: “;
-    //cin >> m;
-    m = 3;
-
-    Code mastermind(n, m); // create code object
-
-    mastermind.printKey(); // print key
+    Code mastermind(n, m);
+    mastermind.printKey();
 
     // test 4 times
     for (int i = 0; i < 4; i++)
     {
-        //create the guess object
-    vector<int> guess = mastermind.guess();
-
-    // call checkCorrect
-    feedback = mastermind.checkCorrect(guess);
-    cout << "checkCorrect returns " << feedback << endl;
+        vector<int> guess = mastermind.guess(); // create guess object
+        feedback = mastermind.checkCorrect(guess);
+        cout << "checkCorrect returns " << feedback << endl;
     }
 
     cout << "done." << endl;
 
     return 0;
 }
-
-
