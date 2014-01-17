@@ -154,12 +154,17 @@ int main()
 
     cout << "For this test function, n and m are hardcoded to 3. \
 In the real game, this will be able to be set by the user." << endl;
+    
+    cout << "\nCode length: 3" << endl;
+    cout << "Range: 0 - 2" << endl;
 
     int n, m, feedback;
     n = 3; // hardcoded code length for testing
     m = 3; // hardcoded code range for testing
 
     Code mastermind(n, m);
+
+    cout << "\nSecret code: ";
     mastermind.printKey();
 
     // test 4 times
