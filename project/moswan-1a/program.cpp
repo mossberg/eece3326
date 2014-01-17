@@ -95,7 +95,7 @@ vector<int> Code::guess() const
     char digit_range = (char)((int)'0' + (range - 1));
 
     //prompt the user to enter a guess
-    cout << "enter your guess (i.e. 35347): ";
+    cout << "enter your guess (i.e. 123): ";
 
     // read input from keyboard until newline char, verify validity, and push
     // to guess vector
@@ -151,6 +151,10 @@ int main()
 // - allows user 4 tries to guess, printing out number of correct digits in
 //   each guess
 {
+
+    cout << "For this test function, n and m are hardcoded to 3. \
+In the real game, this will be able to be set by the user." << endl;
+
     int n, m, feedback;
     n = 3; // hardcoded code length for testing
     m = 3; // hardcoded code range for testing
