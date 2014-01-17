@@ -1,17 +1,20 @@
-/* Mark Mossberg, Yufeng Wang
+/* Project 1a
+ * Mark Mossberg, Yufeng Wang
  * 1/16/14
  *
  * Contains Code class and main (test) function.
  *
- * Compiled on Mac OS X 10.9 using g++ compiler.
- * $ g++ -o program program.cpp -Wall
+ * Compiled on Mac OS X 10.9 using g++
  */
 
+#include "d_random.h" // provided
+#include <cstdlib>    //for the exit function
+#include <cstdio>     //for getchar
 #include <vector>
 #include <iostream>
-#include "d_random.h" // provided
 
 using namespace std;
+
 
 class Code
 // Class declaration for secret code
@@ -20,7 +23,7 @@ public:
     Code(int n, int m);
     int checkCorrect(const vector<int> &g) const;
     void printKey() const;
-    vector<int> guess();
+    vector<int> guess() const;
 
 private:
     vector<int> key;
@@ -49,7 +52,7 @@ Code::Code(int n, int m) : length(n)
     for (int i = 0; i < length; i++) {
         key.push_back(rnd.random(m));
     }
-}
+} // end constructor
 
 
 int Code::checkCorrect(const vector<int> &g) const
@@ -60,6 +63,7 @@ int Code::checkCorrect(const vector<int> &g) const
 //      returns integer that specifies number of correct digits in correct
 //      place
 {
+    //right digit in the right place
     int numRight = 0;
 
     // loop through key and vector and compare each value
@@ -73,7 +77,7 @@ int Code::checkCorrect(const vector<int> &g) const
 }
 
 
-vector<int> Code::guess()
+vector<int> Code::guess() const
 // Asks for guess from user from keyboard
 // - Inputs: None
 // - Outputs:
@@ -82,18 +86,54 @@ vector<int> Code::guess()
 //   a loop
 {
     vector<int> guess;
+    
+    //variable to store input, getchar function returns an int type
     int currentGuess;
+    
+    //create a char variable with the max value that a digit can be
+    //so we can compare it with currentGuess
+    char digit_range = (char)((int)'0' + (range - 1));
+    
+    //prompt the user to enter a guess
+    cout << "enter your guess (i.e. 35347): ";
 
-    cout << "enter your guess numbers: " << endl;
-
-    // loop through
-    for (int i = 0; i < length; i++)
+    // loop through and read all keyboard input from user
+    // continue to loop until we hit the newline character,
+    // signifying that user has finished entering inputs
+    // getchar() returns the integer value of a character
+    while ((currentGuess = getchar()) && (currentGuess != '\n'))
     {
-        cout << "digit " << i << ": ";
-        cin >> currentGuess;
-        guess.push_back(currentGuess);
+        //compare against the ASCII values of our range
+        //if it is not within this range, it is not a integer or
+        //out of bound, so exit
+        if (currentGuess > digit_range || currentGuess < '0')
+        {
+            cout << "Error: input out of range. Exiting." << endl;
+            exit(1);
+        }
+
+        //need to convert to an int
+        //by subtracting the ASCII value of zero from the char,
+        //we will get an integer value equal to that number literal
+        guess.push_back(currentGuess - '0');
     }
 
+    
+    //check that the size of the guess vector matches the length of secret code
+    int guess_size = guess.size();
+    
+    if (guess_size > length)
+    {
+        cout << "Error: entered more digits than code length. Exiting" << endl;
+        exit(1);
+    }
+    else if (guess_size < length)
+    {
+        cout << "Error: entered less digits than code length. Exiting" << endl;
+        exit(1);
+    }
+    
+    
     return guess;
 }
 
@@ -137,3 +177,6 @@ int main()
 
     return 0;
 }
+
+
+
