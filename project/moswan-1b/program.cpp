@@ -84,6 +84,9 @@ int Code::checkIncorrect(const vector<int> &g) const
     int counter = 0;
     vector<int> alreadyGot;
     int flag = 0;
+
+    if (checkCorrect(g) == length)
+        return 0;
     
     for (int i = 0; i < length; i++)
     {
@@ -91,8 +94,9 @@ int Code::checkIncorrect(const vector<int> &g) const
         {
             if (g[j] == key[i])
             {
-                if (i == j)
-                    continue;
+                if (i == j) // if right value in right place
+                    /* continue; */
+                    break;
                 else
                 {
 
