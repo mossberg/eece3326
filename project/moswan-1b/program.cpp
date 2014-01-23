@@ -26,6 +26,7 @@ public:
     void printKey() const;
     vector<int> guess() const;
     int getLength() { return length; }
+    vector<int> getKey() { return key; }
 
 private:
     vector<int> key;
@@ -229,8 +230,23 @@ void mastermind::start()
 
 
     }
+}
+
+template <typename T>
+ostream &operator << (ostream &ostr, const vector<T> &vec)
+{
+    for (int i = 0; i < vec.size(); i++)
+        ostr << vec[i];
+
+    return ostr;
+}
 
 
+ostream &operator << (ostream &ostr, Code &c)
+{
+    vector<int> temp_key = c.getKey();
+    cout << temp_key;
+   return ostr;
 }
 
 int main()
@@ -240,11 +256,7 @@ int main()
 // - allows user 4 tries to guess, printing out number of correct digits in
 //   each guess
 {
-    mastermind game(3, 3);
-    game.start();
 
-    exit(0);
-    Code code(3, 3);
 
     code.printKey();
     vector<int> guess = code.guess();
