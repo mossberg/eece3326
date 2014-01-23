@@ -25,6 +25,7 @@ public:
     int checkIncorrect(const vector<int> &g) const;
     void printKey() const;
     vector<int> guess() const;
+    int getLength() { return length; }
 
 private:
     vector<int> key;
@@ -191,11 +192,46 @@ class mastermind
 {
 public:
     mastermind(int n=0, int m=0);
+    void start();
 
 private:
-    Code secretCode();
+    int numTries;
+    Code code;
 };
 
+mastermind::mastermind(int n, int m)
+    : code(n, m)
+{
+    // todo: set numtries based on n and m
+    numTries = 10;
+}
+
+void mastermind::start()
+{
+    vector<int> guess;
+    int result;
+
+    code.printKey();
+    cout << "Game started" << endl;
+    for (int i = 0; i < numTries; i++) {
+       cout << "Try #" << i << endl;
+       guess = code.guess(); 
+       result = code.checkCorrect(guess);
+       if (result == code.getLength()) {
+           cout << "You won the game" << endl;
+           return;
+       } else {
+            cout << "Incorrect guess" << endl;
+            cout << "# correct digits in correct location: " << result << endl;
+            result = code.checkIncorrect(guess);
+            cout << "# correct digits in incorrect location: " << result << endl;
+       }
+
+
+    }
+
+
+}
 
 int main()
 // Test function for Code class
@@ -204,7 +240,10 @@ int main()
 // - allows user 4 tries to guess, printing out number of correct digits in
 //   each guess
 {
+    mastermind game(3, 3);
+    game.start();
 
+    exit(0);
     Code code(3, 3);
 
     code.printKey();
