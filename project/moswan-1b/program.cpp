@@ -1,6 +1,6 @@
-/* Project 1a
+/* Project 1b
  * Mark Mossberg, Yufeng Wang
- * 1/16/14
+ * 1/27/14
  *
  * Contains Code class and main (test) function.
  *
@@ -10,21 +10,49 @@
 #include "d_random.h" // provided
 #include <cstdlib>    // for the exit function
 #include <cstdio>     // for getchar
+#include <string>
 #include <vector>
 #include <iostream>
 
 using namespace std;
 
 
+class BadInput
+// class for exception handling
+{
+public:
+    BadInput();
+    BadInput(string msg);
+    void setMessage(string msg) { message = msg; }
+    string getMessage() { return message; }
+private:
+    string message;
+};
+
+
+BadInput::BadInput()
+{}
+
+
+BadInput::BadInput(string msg) : message(msg)
+{}
+
+
 class Code
 // Class declaration for secret code
 {
 public:
+    //constructors
+    Code();
     Code(int n, int m);
+    
+    //methods
     int checkCorrect(const vector<int> &g) const;
     int checkIncorrect(const vector<int> &g) const;
     void printKey() const;
-    vector<int> guess() const;
+    vector<int> getGuess() const;
+    
+    //setters and getters
     int getLength() { return length; }
     vector<int> getKey() { return key; }
 
@@ -33,6 +61,16 @@ private:
     int length;
     int range;
 };
+
+
+Code::Code() : length(5), range(10)
+// Default constructor for Code class
+// - Inputs:
+//      none
+// - Initializes length, range, and secret code by delegating constructors
+{
+    randomNumber rnd(time(0));
+}
 
 
 Code::Code(int n, int m) : length(n)
@@ -52,9 +90,11 @@ Code::Code(int n, int m) : length(n)
     else
         range = 10; //set default range
 
-    for (int i = 0; i < length; i++) {
+    rnd.random(m); //read a random number first to make things more random...
+    
+    for (int i = 0; i < length; i++)
         key.push_back(rnd.random(m));
-    }
+
 } // end constructor
 
 
@@ -66,64 +106,129 @@ int Code::checkCorrect(const vector<int> &g) const
 //      returns integer that specifies number of correct digits in correct
 //      place
 {
-    //right digit in the right place
+    //todo: throw exception
+    // check that vector length is the same or throw exception
+    if (key.size() != g.size())
+    {
+        cout << "Error: vector sizes does not match" << endl;
+        exit(1);
+    }
+    
+    // right digit in the right place
     int numRight = 0;
 
     // loop through key and vector and compare each value
     for (int i = 0; i < length; i++)
     {
-        if (key[i] == g[i])
+        if (key.at(i) == g.at(i))
             numRight++;
     }
 
     return numRight;
-}
+} // end checkCorrect
+
 
 int Code::checkIncorrect(const vector<int> &g) const
 {
-    //check the size of the vector
-    
-    int counter = 0;
-    vector<int> alreadyGot;
-    int flag = 0;
+    //todo: throw an exception
+    // check the size of the vectors
+    if (key.size() != g.size())
+    {
+        cout << "Error: vector sizes does not match" << endl;
+        exit(1);
+    }
 
+    // check if guess is equal to secret code
     if (checkCorrect(g) == length)
-        return 0;
+        return 0; // all digits are right value in right place
     
+    int numIncorrect = 0;
+    vector<int> alreadyChecked;
+    int valid = 1;
+
+    /*
+    vector<int> tempKey = key;
+    vector<int> tempGuess = g;
+    int tempSize = length;
+    
+    // delete all correct entries from vectors to eliminate duplicates
+    for (int i = 0; i < tempSize; i++) {
+        if (tempKey.at(i) == g.at(i)) {
+            
+            // remove the duplicate values
+            tempKey.erase(tempKey.begin() + i);
+            tempGuess.erase(tempGuess.begin() + i);
+            
+            // update the vector size and index
+            tempSize = tempKey.size();
+            i--;
+        }
+    }
+    */
+    
+    vector<int> tempKey;
+    vector<int> tempGuess;
+    
+    // delete all correct entries from vectors to eliminate duplicates
     for (int i = 0; i < length; i++)
     {
-        for (int j = 0; j < length; j++)
+        if (key.at(i) != g.at(i))
         {
-            if (g[j] == key[i])
+            tempKey.push_back(key.at(i));
+            tempGuess.push_back(g.at(i));
+        }
+    }
+    
+    // get the new size of the vectors
+    int newSize = tempKey.size();
+    
+    /* code block to outputting the new vectors for checking
+    cout << endl << "new code: ";
+    for (int i = 0; i < newSize; i++)
+        cout << tempKey.at(i);
+    
+    cout << endl << "new guess: ";
+    for (int i = 0; i < newSize; i++)
+        cout << tempGuess.at(i);
+    cout << endl;
+    */
+    
+    // check for right value in the wrong place
+    for (int i = 0; i < newSize; i++)
+    {
+        for (int j = 0; j < newSize; j++)
+        {
+            if (tempGuess.at(i) == tempKey.at(j))
             {
                 if (i == j) // if right value in right place
-                    /* continue; */
                     break;
+                    //we should throw an exception here instead...
+                    //saying error: duplicates were not removed
                 else
                 {
-
-                    flag = 0;
-                    for (unsigned int k = 0; k < alreadyGot.size(); k++) {
-                       if (g[j] == alreadyGot.at(k))
-                           flag = 1;
+                    valid = 1; // reset the flag
+                    
+                    for (unsigned int k = 0; k < alreadyChecked.size(); k++) {
+                       if (tempGuess.at(i) == alreadyChecked.at(k))
+                           valid = 0;
                     }
 
-                    if (flag == 0) 
+                    if (valid)
                     {
-                        counter++;
-                        alreadyGot.push_back(g[j]);
+                        numIncorrect++;
+                        alreadyChecked.push_back(tempGuess.at(i));
                         break;
                     }
                 }
             }
-        }
-    }
+        }// end inner for loop
+    } // end outer for loop
 
-    return counter;
-}
+    return numIncorrect;
+} // end checkIncorrect
 
 
-vector<int> Code::guess() const
+vector<int> Code::getGuess() const
 // Asks for guess from user from keyboard
 // - Inputs: None
 // - Outputs:
@@ -175,7 +280,7 @@ vector<int> Code::guess() const
     }
 
     return guess;
-}
+} // end guess
 
 
 void Code::printKey() const
@@ -189,10 +294,12 @@ void Code::printKey() const
     cout << endl;
 }
 
-class mastermind
+
+class Mastermind
 {
 public:
-    mastermind(int n=0, int m=0);
+    Mastermind(int n=1, int m=1);
+    /* Mastermind(); */
     void start();
 
 private:
@@ -200,23 +307,43 @@ private:
     Code code;
 };
 
-mastermind::mastermind(int n, int m)
+
+/* Mastermind::Mastermind() */
+/* { */
+/*     int n, m; */
+/*     cout << "Enter length of code: "; */
+/*     cin >> n; */
+/*     cout << "Enter range of code: "; */
+/*     cin >> m; */
+/*     Code temp(n, m); */
+/*     code = temp; */
+/* } */
+
+Mastermind::Mastermind(int n, int m)
     : code(n, m)
 {
     // todo: set numtries based on n and m
     numTries = 10;
 }
 
-void mastermind::start()
+void Mastermind::start()
 {
     vector<int> guess;
     int result;
 
+    cout << "Secret code: ";
     code.printKey();
-    cout << "Game started" << endl;
+    
+    cout << "Game started!" << endl;
+    cout << "\nCode length: 5" << endl;
+    cout << "Range: 0 - 4" << endl;
+
+    cout << "Total tries available: ";
+    cout << numTries << endl;
+    
     for (int i = 0; i < numTries; i++) {
        cout << "Try #" << i << endl;
-       guess = code.guess(); 
+       guess = code.getGuess();
        result = code.checkCorrect(guess);
        if (result == code.getLength()) {
            cout << "You won the game" << endl;
@@ -230,6 +357,7 @@ void mastermind::start()
 
 
     }
+    cout << "you ran out of guesses" << endl;
 }
 
 template <typename T>
@@ -251,44 +379,11 @@ ostream &operator << (ostream &ostr, Code &c)
 
 int main()
 // Test function for Code class
-// - Initializes a Code object
-// - Displays secret code
-// - allows user 4 tries to guess, printing out number of correct digits in
-//   each guess
 {
 
+    Mastermind game(5, 5);
+    game.start();
 
-    code.printKey();
-    vector<int> guess = code.guess();
-    int result = code.checkIncorrect(guess);
-    cout << result << endl;
-
-    exit(0);
-
-    cout << "For this test function, n and m are hardcoded to 3. \
-In the real game, this will be able to be set by the user." << endl;
-    
-    cout << "\nCode length: 3" << endl;
-    cout << "Range: 0 - 2" << endl;
-
-    int n, m, feedback;
-    n = 3; // hardcoded code length for testing
-    m = 3; // hardcoded code range for testing
-
-    Code mastermind(n, m);
-
-    cout << "\nSecret code: ";
-    mastermind.printKey();
-
-    // test 4 times
-    for (int i = 0; i < 4; i++)
-    {
-        vector<int> guess = mastermind.guess(); // create guess object
-        feedback = mastermind.checkCorrect(guess);
-        cout << "checkCorrect returns " << feedback << endl;
-    }
-
-    cout << "done." << endl;
 
     return 0;
 }
