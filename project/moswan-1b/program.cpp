@@ -321,7 +321,7 @@ private:
     Code secretCode;
 
     // private method
-    int calculateTries(int length, int range);
+    int calculateTries(const int length, const int range) const;
 };
 
 
@@ -351,7 +351,7 @@ Mastermind::Mastermind(int n, int m)
 }
 
 
-int Mastermind::calculateTries(int length, int range)
+int Mastermind::calculateTries(const int length, const int range) const
 // Compute the number of tries based on length and range
 // - Inputs:
 //      length: length of the code
