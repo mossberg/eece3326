@@ -1,7 +1,3 @@
-// TODO throw exceptions
-// TODO write deconstructors and free memory
-// TODO clean up and write comments
-
 /* Project 2a
  * Mark Mossberg, Yufeng Wang
  * 2/2/14
@@ -134,8 +130,7 @@ Deck::Deck()
     {
         for (int j = 2; j <= numCards; j++)
         {
-            Card temp(j, SUITS[i]);
-            append(temp);
+            append(Card(j, SUITS[i]));
         }
     }
 
@@ -148,19 +143,17 @@ Deck::~Deck()
 // Deconstructor for the Deck class
 // - Reads every node in the list and de-allocates them
 {
-    node<Card>* current = head;
-
     // check that list is not empty
-    if (current == NULL)
+    if (head == NULL)
         return; // nothing to do
 
-    while(current != NULL)
+    while(head != NULL)
     {
         // create reference to node
-        node<Card>* cardPtr = current;
+        node<Card>* cardPtr = head;
 
         // advance to next in list
-        current = current->next;
+        head = head->next;
 
         // delete the previous node
         delete cardPtr;
