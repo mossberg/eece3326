@@ -1,16 +1,3 @@
-// 2/4 9:41 pm - mark - add copy constructor, overload assignment for card class
-// 2/4 11:45 pm - mark - add copy constructor, overload assignment op for deck class
-// 2/5 9:10 pm - mark - add deal method to deck class, initial implementation of shuffle
-// 2/5 11:35pm - yufeng - added a todo list
-
-
-// TODO: rework Deck copy constructor
-// TODO: change over to use STL list?
-// TODO: function 'replace' just use append - i actually did this but forgot to log it (mark)
-// TODO: do shuffle! implement riffle and/or Durstenfeld's algorithm
-// TODO: global 'playFlip' function
-// TODO: throw exceptions
-
 /* Project 2b
  * Mark Mossberg, Yufeng Wang
  * 2/10/14
@@ -43,14 +30,14 @@ public:
     Card(int v=2, string s=CLUB);
     Card(const Card &c);
     
-    // methods
-    friend ostream &operator << (ostream &ostr, const Card &c);
-    Card &operator=(const Card &c); 
+    // overloads
+    friend ostream &operator <<(ostream &ostr, const Card &c);
+    Card &operator =(const Card &c); 
     
     // setters and getters
     void setValue(const int v) { value = v; }
-    int getValue() const { return value; }
     void setSuit(const string s) { suit = s; }
+    int getValue() const { return value; }
     string getSuit() const { return suit; }
 
 private:
@@ -79,11 +66,23 @@ Card::Card(int v, string s)
         suit = s;
 }
 
+
 Card::Card(const Card &c)
     : value(c.value), suit(c.suit)
-{}
+// Copy constructor for Card class
+// - Input:
+//      c: object of class Card
+// - The value and suit being copied should be valid
+{
+    // check for valid values after initialization list
+    if (value < 2 || value > 14)
+        throw baseException("card value out of range");
+    else if (suit != DIAMOND && suit != SPADE && suit != HEART && suit != CLUB)
+        throw baseException("suit is not valid");
+}
 
-ostream &operator << (ostream &ostr, const Card &c)
+
+ostream &operator <<(ostream &ostr, const Card &c)
 // Overloaded output operator function
 // - Inputs:
 //      ostr: refernce to the ostream object
@@ -117,9 +116,11 @@ ostream &operator << (ostream &ostr, const Card &c)
     return ostr;
 }
 
-Card &Card::operator=(const Card &c)
+
+Card &Card::operator =(const Card &c)
+// Overloading the Card Class assignment operator
 {
-    value = c.value; // TODO: can we call a copy constructor here or use an init list?
+    value = c.value;
     suit = c.suit;
     return *this;
 }
@@ -135,10 +136,11 @@ public:
     Deck(const Deck &d);
 
     // overloads
-    friend ostream &operator << (ostream &ostr, const Deck &set);
-    Deck &operator = (const Deck &d);
+    friend ostream &operator <<(ostream &ostr, const Deck &d);
+    Deck &operator =(const Deck &d);
     
     // methods
+    int getSize() const;
     Card deal() { return pop_front(); }
     void replace(const Card c) { push_back(c); }
     void shuffle();
@@ -147,7 +149,6 @@ private:
     node<Card>* head;
     
     // private methods
-    int getSize() const;
     void push_back(const Card &c);
     Card pop_front();
 };
@@ -162,11 +163,12 @@ Deck::Deck()
     const int numSuits = 4;
     const string SUITS[] = {CLUB, DIAMOND, HEART, SPADE};
     
-    head = NULL;
+    head = NULL; // initialize head pointer first
     for (int i = 0; i < numSuits; i++)
     {
         for (int j = 2; j <= numCards; j++)
         {
+            // call Card constructor and push back new Card object
             push_back(Card(j, SUITS[i]));
         }
     }
@@ -195,10 +197,17 @@ Deck::~Deck()
         // delete the previous node
         delete cardPtr;
     }
+
+    if (head != NULL)
+        throw baseException("memory de-allocation failed");
 }
 
 
 Deck::Deck(const Deck &d)
+// Copy constructor for Deck class
+// - Inputs:
+//      d: reference to a Deck object as copy source
+// - Create a new linked list of Cards
 {
     // need to traverse d's entire list and allocate a copy of each
     head = NULL;
@@ -218,19 +227,19 @@ Deck::Deck(const Deck &d)
 }
 
 
-ostream &operator << (ostream &ostr, const Deck &set)
+ostream &operator <<(ostream &ostr, const Deck &d)
 // Overloaded output operator function
 // - Inputs:
 //      ostr: refernce to the ostream object
-//      set: reference to a deck of cards
+//      d: reference to a deck of cards
 // - Outputs:
 //      returns a reference to the ostream object
 // - Prints out every card value and suit in the deck
 // - Granted friendship from the Deck class
 {
-    node<Card>* current = set.head;
+    node<Card>* current = d.head;
 
-    // read the through linked list and print every card
+    // read through linked list and print every card
     while (current != NULL)
     {
         cout << current->nodeValue << endl;
@@ -241,25 +250,27 @@ ostream &operator << (ostream &ostr, const Deck &set)
 }
 
 
-Deck &Deck::operator = (const Deck &d)
+Deck &Deck::operator =(const Deck &d)
+// Overloaded Deck class assignment operator
+// Input: Deck Object
+// Output: Completely newly created Deck object with newly allocated card linked list
 {
-    //*this = Deck(d); // does this work? set yourself to copy constructor return value
-    //return *this;
     
     if (getSize() != d.getSize())
         throw baseException("deck sizes does not match");
         
     node<Card>* current = head;
-    node<Card>* list = d.head;
+    node<Card>* d_current = d.head;
     while (current != NULL)
     {
-        current->nodeValue = list->nodeValue;
+        current->nodeValue = d_current->nodeValue;
         current = current->next;
-        list = list->next;
+        d_current = d_current->next;
     }
     
     return *this;
 }
+
 
 void Deck::push_back(const Card &c)
 // Append a new card to end of linked list
@@ -270,17 +281,17 @@ void Deck::push_back(const Card &c)
     // create new node with new card as the value
     node<Card>* cardPtr = new node<Card>(c);
 
-    node<Card>* current = head;
-    
     // check if the list is empty
-    if (current == NULL)
+    if (head == NULL)
     {
         // just assign head to new node
         head = cardPtr;
         return;
     }
-
-    // get to the end of the linked list
+    
+    node<Card>* current = head;
+    
+    // go to the end of the linked list
     while (current->next != NULL)
         current = current->next;
   
@@ -290,6 +301,11 @@ void Deck::push_back(const Card &c)
 
 
 Card Deck::pop_front()
+// Remove the top Card from the Deck
+// - Inputs: none
+// - Outputs:
+//      the removed Card object
+// - Returns the top Card and de-allocates the node memory space
 {
     if (head == NULL)
         throw baseException("deck is empty");
@@ -303,76 +319,80 @@ Card Deck::pop_front()
     return topCard;
 }
 
-void Deck::shuffle()
-{
-    int numCards = 0;
-    node<Card>* behind = NULL;
-    node<Card>* current = head;
-    
-    // check if list is like 1 item or something
-    if (head->next == NULL)
-        return;
 
-    // 1. get number of cards in deck (list)
-    while (current != NULL)
-    {
-        numCards++;
-        current = current->next;
-    }
-    
-    // idea 1: randomly select 2 numbers between 1 and # cards and swap them
-    // do this # cards times
-    
-    // idea 2: randomly select 1 random number been 1 and # cards and then
-    // append that card to a NEW list. do this until there are no cards left
-    // then make head point to the new shuffled list and delete the old one
-    
-    // idea 3: randomly select card, remove from current position and put it at
-    // the end -- i think this one is the easiest?
-    
-    int randCard = 0;
-    int counter = 0;
-    
+void Deck::shuffle()
+// Shuffles the Deck of Cards
+// - Inputs: none
+// - Outpus: none
+// - Randomly selects a Card, removes it from current position, and put it
+//   at the end of the list
+{
+   
+    if (head == NULL)
+        throw baseException("deck is empty, can't shuffle");
+    else if (head->next == NULL)
+        throw baseException("deck has one card, nothing to shuffle");
+
+    // start up the random number generator
     randomNumber rnd(time(0));
-    rnd.random(numCards);
-    
-    for (int i = 0; i < numCards; i++) {
-        cout << "Trying " << i << endl;
-        // reset stuff
-        counter = 0;
-        behind = head;
-        current = head->next;
-        
-        // get rand number from 0 to numCards - 1
-        randCard = rnd.random(numCards - i); // this doesn't work, just placeholder
-        
-        // if randCard is 0 (head)
+    rnd.random(getSize());
+
+    // same as saying (n = 0; n < 52; n++)
+    for (int numCards = getSize(); numCards > 0; numCards--)
+    {
+        // get a random number, returns 0 <= randCard <= (numCards - 1)
+        int randCard = rnd.random(numCards);
+
+        // check if it wants to shuffle the head
         if (randCard == 0)
         {
-            push_back(behind->nodeValue);
+            // push back the top Card
+            push_back(head->nodeValue);
+
+            // get a reference to old head
+            node<Card>* tmp = head;
+
+            // assign new head
             head = head->next;
-            delete behind;
+
+            // delete and continue to next shuffle
+            delete tmp;
             continue;
         }
-        else if (randCard == numCards) // last card, do nothing
+
+        // pointer to node BEFORE the desired node
+        node<Card>* before = head;
+
+        // we already checked head, so counter is one
+        int counter = 1;
+
+        // get to the desired place
+        while (counter != randCard)
         {
-            continue;
-        }
-        
-        while (counter != randCard) {
-            current = current->next; // current is the one we want to replace
-            behind = behind->next; // one behind current, so we can patch the list
+            before = before->next;
             counter++;
         }
-        
-        push_back(current->nodeValue); // add to end
-        behind->next = current->next;
-        delete behind;
-        
+
+        // get pointer to the node we want to shufle
+        node<Card>* desiredNode = before->next;
+
+        // push back the Card
+        push_back(desiredNode->nodeValue);
+
+        // patch the list
+        before->next = desiredNode->next;
+
+        // de-allocate the node
+        delete desiredNode;
     }
 }
 
+
 int Deck::getSize() const
+// Get the size of the Deck
+// - Inputs: none
+// - Outputs:
+//      returns the number of Cards
 {
     int num = 0;
     
@@ -388,17 +408,91 @@ int Deck::getSize() const
 }
 
 
+void playFlip()
+// Global function to start the game!
+{
+    Deck flip;
+    int userInput = 0;
+    int points = 0;
+    int cardValue;
+    Card dealedCard;
+    
+    // shuffle the deck three times
+    flip.shuffle();
+    flip.shuffle();
+    flip.shuffle();
+   
+    cout << "Welcome to \"Flip\"!" << endl;
+    cout << "\nStarting points: 0" << endl; 
+    while (1)
+    {
+        cout << "Enter 1 to continue or 0 to stop: ";
+        cin >> userInput;
+        if (userInput == 0)
+        {
+            cout << "Ending game..." << endl;
+            break;
+        }
+        else if (flip.getSize() == 0)
+        {
+            cout << "Deck is out of cards, ending game..." << endl;
+            break;
+        }
+        
+        dealedCard = flip.deal();
+        cardValue = dealedCard.getValue();
+        
+        cout << "\nDealing top card: " << dealedCard << endl;
+        
+        // check card value and assign points
+        if (cardValue == 14)
+        {
+            points += 10;
+            cout << "Earned 10 points! ";
+        }
+        else if (cardValue > 10 && cardValue < 14)
+        {
+            points += 5;
+            cout << "Earned 5 points! ";
+        }
+        else if (cardValue > 7 && cardValue < 11)
+        {
+            cout << "Didn't earn any points. ";
+        }
+        else if (cardValue == 7)
+        {
+            points /= 2;
+            cout << "Lost half of points! ";
+        }
+        else if (cardValue > 1 && cardValue < 7)
+        {
+            points = 0;
+            cout << "Lost all points! ";
+        }
+       
+        // check if we have a Heart
+        if (dealedCard.getSuit() == HEART)
+        {
+            points += 1;
+            cout << "+1 for a Heart!" << endl;
+        }
+        else
+            cout << endl;
+        
+        // display total points so far
+        cout << "Current points: " << points << endl;
+    }
+    
+    cout << "\nYou ended the game with " << points << " points!" << endl;
+    cout << "Exiting game..." << endl;
+}
+
+
 int main()
 {
     try
     {
-        Deck flip;
-        cout << flip << endl;
-        cout << "\n\n\n" << endl;
-        flip.shuffle();
-        cout << flip << endl;
-
-        // cout << flip2 << endl;
+        playFlip();
     }
     catch (baseException &ex)
     {
