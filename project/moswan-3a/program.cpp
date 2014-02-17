@@ -86,8 +86,8 @@ bool checkNext(const int DIRECTION, Grid _grid, int x, int y,
                string::iterator wordItr, string::iterator wordEnd)
 {
     matrix<char> grid = _grid.getGrid();
-    int grid_cols = _grid.getColumns();
-    int grid_rows = _grid.getRows();
+    int grid_cols = _grid.getColumns() - 1;
+    int grid_rows = _grid.getRows() - 1;
 
     // the coordinates to actually search at
     int search_x = x;
@@ -190,28 +190,28 @@ WordList::WordList(string file)
 bool WordList::wordLookup(int index, Grid _grid)
 {
     matrix<char> grid = _grid.getGrid();
-    int x = 1, y = 1;
+    int x = 0, y = 0;
     string word = words[index];
     string::iterator wordItr;
     string::iterator wordEnd = word.end();
     
-    int grid_cols = _grid.getColumns();
-    int grid_rows = _grid.getRows();
+    int grid_cols = _grid.getColumns() - 1; // minus 1 because 0 indexingj
+    int grid_rows = _grid.getRows() - 1;
     const int DIRECTIONS[] = {NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH,
                               SOUTHWEST, WEST, NORTHWEST};
     const int numDirections = 8;
     
-    for (int i = 1; i <= grid_rows; i++) // loop through matrix rows
+    for (int i = 0; i <= grid_rows; i++) // loop through matrix rows
     {
-        for (int j = 1; j <= grid_cols; j++) // loop through matrix columns
+        for (int j = 0; j <= grid_cols; j++) // loop through matrix columns
         {
-            cout << i << " " << j << " ";
-            cout << grid[i][j] << " " << word[0] << endl;
+            /* cout << i << " " << j << " "; */
+            /* cout << grid[i][j] << " " << word[0] << endl; */
             if (grid[i][j] == word[0])
             // check each grid square to see if it matches the first letter
             // of what we're looking for
             {
-                cout << "boom!!" << endl;
+                /* cout << "boom!!" << endl; */
                 wordItr = word.begin();
 
                 // save current coordinates
@@ -227,13 +227,14 @@ bool WordList::wordLookup(int index, Grid _grid)
                 // new idea: instead of writing 8 functions, write one
                 // that accepts a parameter for what direction to look in
                 
-                for (int k = 0; i < numDirections; i++)
+                for (int k = 1; k <= numDirections; k++)
                 {
                     // check if the next character in a direction matches
                     // the next character of the word
                     if (checkNext(DIRECTIONS[k], _grid, x, y, wordItr++,
                                   wordEnd))
                     {
+                        cout << "found at " << x << " " << y << endl;
                         return true;
                     }
                 
@@ -243,7 +244,7 @@ bool WordList::wordLookup(int index, Grid _grid)
         }
     }
     
-    return true; // to make it compile
+    return false;
     
 }
 
@@ -255,8 +256,21 @@ int main()
 {
     WordList w("wordlist");
     Grid g("input15");
-    cout << "word: " << w.getWords()[0] << endl;
-    cout << w.wordLookup(0, g);
+    cout << "word: " << w.getWords()[86895] << endl;
+   cout << w.wordLookup(86895, g);
+
+    for (int i = 0; i < 100; i++) 
+    {
+        cout << "word: " << w.getWords()[i] << endl;
+       cout << w.wordLookup(i, g);
+        
+    }
+
+    /* for (unsigned int i = 0; i < w.getWords().size(); i++) { */
+    /*     if (w.getWords()[i] == "motivate\n") */
+    /*         cout << "yes" << i << endl; */
+        
+    /* } */
 
     
     return 0;
