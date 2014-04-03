@@ -1,32 +1,3 @@
-
-/*
- * Changelog:
- * 3/8/14 1:13 am - mark - mark's new stuff
- * 3/8/14 4:30 pm - yufeng - various small things
- *                         - implimented clear method
- *                         - finished setCell
- * 3/8/14 5:30 pm - yufeng - finished printConflict + a few fixes
- * 3/8/14 8:30 pm - yufeng - reimplimented setCell, and verified
- *                          - implimented checkConflict, clearCell (just setCell with Blank)
- * 3/8/14 9:00 pm - yufeng - implimented isSolved
- * 3/9/14 2:14 pm - mark - adding comments
- */
-
-/*
- * TODO:
- * [x] three matrices for conflict, rows, column, and squares
- * [x] finish printConflict method
- * [x] impliment checkConflict method
- *      - check whether a value causes conflict if placed in cell (i, j)
- * [x] verify setCell method (and the caused conflict)
- * [x] impliment clearCell method
- *      - clear a cell and update conflict
- * [x] impliment solved method
- *      - solved == no trues in any of the conflict matrices
- *      - return true or false
- *      - print result to screen
-*/
-
 // Declarations and functions for project #4
 
 #include <iostream>
@@ -471,8 +442,7 @@ int board::findNextBlank(int &i, int &j)
     return 0;
 }
 
-string temp;
-
+string temp;    // for testing
 bool board::solve(int i, int j) // int i, j are coordinates to look in
 {
     //getline(cin, temp);
@@ -495,9 +465,7 @@ bool board::solve(int i, int j) // int i, j are coordinates to look in
                 value[i][j] = val;
                 int next_i = 0;
                 int next_j = 0;
-                //if (!findNextBlank(next_i, next_j)) {
-                  //  throw baseException("didn't find blanks, and board apparently isn't solved")
-                //}
+
                 findNextBlank(next_i, next_j);
                 //cout << "found next blank: " << next_i << " " << next_j << endl;
                 bool result = solve(next_i, next_j);
@@ -557,3 +525,4 @@ int main()
         exit(1);
     }
 }
+
