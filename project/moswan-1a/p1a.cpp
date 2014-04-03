@@ -15,7 +15,6 @@
 
 using namespace std;
 
-
 class Code
 // Class declaration for secret code
 {
@@ -30,7 +29,6 @@ private:
     int length;
     int range;
 };
-
 
 Code::Code(int n, int m) : length(n)
 // Constructor for Code class
@@ -54,7 +52,6 @@ Code::Code(int n, int m) : length(n)
     }
 } // end constructor
 
-
 int Code::checkCorrect(const vector<int> &g) const
 // Compares guess to secret code
 // - Inputs:
@@ -75,7 +72,6 @@ int Code::checkCorrect(const vector<int> &g) const
 
     return numRight;
 }
-
 
 vector<int> Code::guess() const
 // Asks for guess from user from keyboard
@@ -131,7 +127,6 @@ vector<int> Code::guess() const
     return guess;
 }
 
-
 void Code::printKey() const
 // Prints out secret code to screen
 // - Inputs: none
@@ -142,7 +137,6 @@ void Code::printKey() const
 
     cout << endl;
 }
-
 
 int main()
 // Test function for Code class
@@ -179,3 +173,4 @@ In the real game, this will be able to be set by the user." << endl;
 
     return 0;
 }
+
