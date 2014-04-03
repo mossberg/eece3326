@@ -12,7 +12,6 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-
 #include "d_except.h"
 #include "d_matrix.h"
 
@@ -26,7 +25,6 @@ const int SOUTH = 4;
 const int SOUTHWEST = 5;
 const int WEST = 6;
 const int NORTHWEST = 7;
-
 
 class Grid
 // Grid Class Declaration
@@ -43,7 +41,6 @@ public:
 private:
     matrix<char> grid;
 };
-
 
 Grid::Grid(string file)
 // Constructor
@@ -78,7 +75,6 @@ Grid::Grid(string file)
     
     input.close();
 }
-
 
 bool checkNext(const int DIRECTION, const matrix<char> &grid, int x, int y,
                string::iterator wordItr, const string::iterator wordEnd)
@@ -162,7 +158,6 @@ bool checkNext(const int DIRECTION, const matrix<char> &grid, int x, int y,
         return false;
 }
 
-
 class WordList
 // class declaration for the wordlist class
 {
@@ -181,7 +176,6 @@ public:
 private:
     vector<string> list;
 };
-
 
 WordList::WordList(string file)
 // Constructor
@@ -205,7 +199,6 @@ WordList::WordList(string file)
         list.push_back(tmpWord);
     }
 }
-
 
 bool wordLookup(string word, const matrix<char> &grid)
 // Global function to lookup words in the grid
@@ -260,7 +253,6 @@ bool wordLookup(string word, const matrix<char> &grid)
     return false;
 }
 
-
 void findMatches(const WordList &list, const Grid &gridObj)
 // Global function that finds all possible words in a grid
 // - Inputs:
@@ -281,11 +273,10 @@ void findMatches(const WordList &list, const Grid &gridObj)
         tmpWord = list.getWordAt(i);
 
         // check word length first then look it up in grid
-        if ((tmpWord.length() >= minWordLength) && wordLookup(tmpWord, grid))
+        if (((int) tmpWord.length() >= minWordLength) && wordLookup(tmpWord, grid))
             cout << tmpWord << endl;
     }
 }
-
 
 void testSearch()
 // Global function to get input files and find matching words in word puzzle
@@ -301,7 +292,6 @@ void testSearch()
     findMatches(w, g);
 }
 
-
 int main()
 {
     try
@@ -315,3 +305,4 @@ int main()
 
     return 0;
 }
+
