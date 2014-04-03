@@ -1,28 +1,3 @@
-/*
-Changelog:
-2/23 5:48 pm - yufeng - fixed seg fault, cause: index j in partition
-                      - refactored checkNext: x and y to j and i
-2/23 7:33 pm - yufeng - implemented quicksort and binarysearch
-2/23 11:26 pm - yufeng - implemented heapsort
-                       - heapsort works (try using a wordlist with 50 words), but takes a long time
-                       - added some documentation and cleaned up code a bit
-2/23 11:53 pm - yufeng - added a global counter and found num of string compares
-*/
-
-/*
-TODO:
-[x] implement wordlist::inWordList(string word)
-[x] refactor wordlookup function
-    - keep loops through every single point
-    - keep loops through the directions
-[x] - refactor checknext function to append characters and search for word
-[x] - implement quicksort
-[x] - implement binarysearch
-[x] - implement heapsort
-[ ] exceptions and documentation
-[x] number of string comparisons
-*/
-
 /* Project 3b
  * Mark Mossberg, Yufeng Wang
  * 2/24/14
@@ -76,7 +51,6 @@ private:
     matrix<char> grid;
 };
 
-
 Grid::Grid(string file)
 // Constructor
 // - Inputs:
@@ -111,7 +85,6 @@ Grid::Grid(string file)
     input.close();
 }
 
-
 void swap(vector<string> &list, int first, int second)
 // given a reference to a vector of words, swap two words at designated indices
 {
@@ -124,7 +97,6 @@ void swap(vector<string> &list, int first, int second)
     list[first] = list[second];
     list[second] = temp;
 }
-
 
 int partition(vector<string> &list, int left, int right)
 // for quicksort algorithm
@@ -158,7 +130,6 @@ int partition(vector<string> &list, int left, int right)
     return j;
 }
 
-
 void quickSort(vector<string> &list, int left, int right)
 // sort the list recursively using quicksort algorithm
 {
@@ -172,7 +143,6 @@ void quickSort(vector<string> &list, int left, int right)
         quickSort(list, s + 1, right);
     }
 }
-
 
 /* heap sort */
 // the heap is a vector that is derived from a binary tree
@@ -254,7 +224,6 @@ void heapSort(vector<string> &list)
 }
 /* end heap sort */
 
-
 bool binarySearch(const vector<string> &list, int first, int last, string target)
 // given a list that is sorted smallest to largest, find the target by
 // checking half of the list,
@@ -280,7 +249,6 @@ bool binarySearch(const vector<string> &list, int first, int last, string target
     return false;
 }
 
-
 class WordList
 // declaration for wordlist class, containing words to search for
 // in grid
@@ -302,7 +270,6 @@ public:
 private:
     vector<string> list;
 };
-
 
 WordList::WordList(string file)
 // Constructor
@@ -327,7 +294,6 @@ WordList::WordList(string file)
     }
 }
 
-
 bool WordList::inWordList(const string word) const
 // given a word, search for it in the list
 // true if found, otherwise false
@@ -337,7 +303,6 @@ bool WordList::inWordList(const string word) const
 
     return binarySearch(list, 0, getLength(), word);
 }
-
 
 void checkNext(const int DIRECTION, const WordList &list, const matrix<char> &grid, int i, int j)
 // given a direction, a word list, a matrix, and starting coordinates,
@@ -497,7 +462,6 @@ void checkNext(const int DIRECTION, const WordList &list, const matrix<char> &gr
     }
 }
 
-
 void findMatches(const WordList &list, const Grid &gridObj)
 // Global function to lookup words in the grid
 // - Inputs:
@@ -524,7 +488,6 @@ void findMatches(const WordList &list, const Grid &gridObj)
     }
 }
 
-
 void testSearch()
 // Global function to get input files and find matching words in word puzzle
 {
@@ -546,7 +509,6 @@ void testSearch()
     findMatches(w, g);
 }
 
-
 int main()
 {
     try
@@ -561,3 +523,4 @@ int main()
 
     return 0;
 }
+
