@@ -42,7 +42,6 @@ private:
     string suit;
 };
 
-
 Card::Card(int v, string s)
 // Default constructor
 // - Inputs:
@@ -62,7 +61,6 @@ Card::Card(int v, string s)
     else
         suit = s;
 }
-
 
 ostream &operator << (ostream &ostr, const Card &c)
 // Overloaded output operator function
@@ -98,7 +96,6 @@ ostream &operator << (ostream &ostr, const Card &c)
     return ostr;
 }
 
-
 class Deck
 // class declaration for a deck of cards
 {
@@ -114,7 +111,6 @@ public:
 private:
     node<Card>* head;
 };
-
 
 Deck::Deck()
 // Default constructor for a deck
@@ -138,7 +134,6 @@ Deck::Deck()
         throw baseException("deck setup failed");
 }
 
-
 Deck::~Deck()
 // Deconstructor for the Deck class
 // - Reads every node in the list and de-allocates them
@@ -159,7 +154,6 @@ Deck::~Deck()
         delete cardPtr;
     }
 }
-
 
 ostream &operator << (ostream &ostr, const Deck &set)
 // Overloaded output operator function
@@ -182,7 +176,6 @@ ostream &operator << (ostream &ostr, const Deck &set)
     
     return ostr;
 }
-
 
 void Deck::append(const Card &c)
 // Append a new card to end of linked list
@@ -211,7 +204,6 @@ void Deck::append(const Card &c)
     current->next = cardPtr;
 }
 
-
 int main()
 {
     try
@@ -226,3 +218,4 @@ int main()
     
     return 0;
 }
+

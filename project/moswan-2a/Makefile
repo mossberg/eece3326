@@ -1,13 +1,13 @@
 CC = g++
 FLAGS = -Wall -g
-TARGET = program
+TARGET = p2a
 HEADER = $(wildcard *.h)
 
 
 all: $(TARGET)
 
 $(TARGET): $(TARGET).cpp
-	$(CC) $(FLAGS) $(TARGET).cpp -o program
+	$(CC) -o $(TARGET) $(FLAGS) $(TARGET).cpp
 
 clean:
 	rm -v $(TARGET)
