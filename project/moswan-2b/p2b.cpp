@@ -45,7 +45,6 @@ private:
     string suit;
 };
 
-
 Card::Card(int v, string s)
 // Default constructor
 // - Inputs:
@@ -66,7 +65,6 @@ Card::Card(int v, string s)
         suit = s;
 }
 
-
 Card::Card(const Card &c)
     : value(c.value), suit(c.suit)
 // Copy constructor for Card class
@@ -80,7 +78,6 @@ Card::Card(const Card &c)
     else if (suit != DIAMOND && suit != SPADE && suit != HEART && suit != CLUB)
         throw baseException("suit is not valid");
 }
-
 
 ostream &operator <<(ostream &ostr, const Card &c)
 // Overloaded output operator function
@@ -116,7 +113,6 @@ ostream &operator <<(ostream &ostr, const Card &c)
     return ostr;
 }
 
-
 Card &Card::operator =(const Card &c)
 // Overloading the Card Class assignment operator
 {
@@ -124,7 +120,6 @@ Card &Card::operator =(const Card &c)
     suit = c.suit;
     return *this;
 }
-
 
 class Deck
 // class declaration for a deck of cards
@@ -153,7 +148,6 @@ private:
     Card pop_front();
 };
 
-
 Deck::Deck()
 // Default constructor for a deck
 // - Inputs: none
@@ -176,7 +170,6 @@ Deck::Deck()
     if (head == NULL)
         throw baseException("deck setup failed");
 }
-
 
 Deck::~Deck()
 // Deconstructor for the Deck class
@@ -202,7 +195,6 @@ Deck::~Deck()
         throw baseException("memory de-allocation failed");
 }
 
-
 Deck::Deck(const Deck &d)
 // Copy constructor for Deck class
 // - Inputs:
@@ -226,7 +218,6 @@ Deck::Deck(const Deck &d)
     }
 }
 
-
 ostream &operator <<(ostream &ostr, const Deck &d)
 // Overloaded output operator function
 // - Inputs:
@@ -249,7 +240,6 @@ ostream &operator <<(ostream &ostr, const Deck &d)
     return ostr;
 }
 
-
 Deck &Deck::operator =(const Deck &d)
 // Overloaded Deck class assignment operator
 // Input: Deck Object
@@ -270,7 +260,6 @@ Deck &Deck::operator =(const Deck &d)
     
     return *this;
 }
-
 
 void Deck::push_back(const Card &c)
 // Append a new card to end of linked list
@@ -299,7 +288,6 @@ void Deck::push_back(const Card &c)
     current->next = cardPtr;
 }
 
-
 Card Deck::pop_front()
 // Remove the top Card from the Deck
 // - Inputs: none
@@ -318,7 +306,6 @@ Card Deck::pop_front()
     delete temp;
     return topCard;
 }
-
 
 void Deck::shuffle()
 // Shuffles the Deck of Cards
@@ -387,7 +374,6 @@ void Deck::shuffle()
     }
 }
 
-
 int Deck::getSize() const
 // Get the size of the Deck
 // - Inputs: none
@@ -406,7 +392,6 @@ int Deck::getSize() const
 
     return num;
 }
-
 
 void playFlip()
 // Global function to start the game!
@@ -487,7 +472,6 @@ void playFlip()
     cout << "Exiting game..." << endl;
 }
 
-
 int main()
 {
     try
@@ -501,3 +485,4 @@ int main()
     
     return 0;
 }
+
