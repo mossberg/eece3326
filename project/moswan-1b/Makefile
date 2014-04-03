@@ -1,11 +1,14 @@
-TARGET = program
+CC = g++
+FLAGS = -Wall -g
+TARGET = p1b
+HEADER = $(wildcard *.h)
+
 
 all: $(TARGET)
 
-$(TARGET): $(addsuffix .cpp, $(TARGET))
-	g++ -o $(TARGET) -Wall -g $(addsuffix .cpp, $(TARGET))
+$(TARGET): $(TARGET).cpp
+	$(CC) -o $(TARGET) $(FLAGS) $(TARGET).cpp
 
 clean:
-	rm $(TARGET)
-	rm  -rf $(TARGET).dSYM
-
+	rm -v $(TARGET)
+	rm -rfv $(TARGET).dSYM

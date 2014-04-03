@@ -16,7 +16,6 @@
 
 using namespace std;
 
-
 class Error
 // class for exception handling
 {
@@ -35,7 +34,6 @@ public:
 private:
     string message;
 };
-
 
 class Code
 // Class declaration for secret code
@@ -65,7 +63,6 @@ private:
     int range;
 };
 
-
 ostream & operator << (ostream &ostr, const vector<int> &vec)
 // Overload the output operator to print out a vector
 {
@@ -75,7 +72,6 @@ ostream & operator << (ostream &ostr, const vector<int> &vec)
     return ostr;
 }
 
-
 ostream & operator << (ostream &ostr, Code &c)
 // Use the overloaded output function to output the code
 {
@@ -84,7 +80,6 @@ ostream & operator << (ostream &ostr, Code &c)
     
     return ostr;
 }
-
 
 Code::Code() : length(5), range(10)
 // Default constructor for Code class
@@ -99,7 +94,6 @@ Code::Code() : length(5), range(10)
     for (int i = 0; i < 5; i++)
         key.push_back(rnd.random(10));
 }
-
 
 Code::Code(int n, int m)
 // Constructor for Code class
@@ -132,7 +126,6 @@ Code::Code(int n, int m)
 
 } // end Code constructor
 
-
 int Code::checkCorrect(const vector<int> &g) const
 // Compares guess to secret code
 // - Inputs:
@@ -158,7 +151,6 @@ int Code::checkCorrect(const vector<int> &g) const
 
     return numRight;
 } // end checkCorrect
-
 
 int Code::checkIncorrect(const vector<int> &g) const
 // Compares guess to secret code
@@ -230,7 +222,6 @@ int Code::checkIncorrect(const vector<int> &g) const
     return numIncorrect;
 } // end checkIncorrect
 
-
 vector<int> Code::makeGuess() const
 // Asks for guess from user from keyboard
 // - Inputs: None
@@ -285,7 +276,6 @@ vector<int> Code::makeGuess() const
     return guess;
 } // end guess
 
-
 void Code::printKey() const
 // Prints out secret code to screen
 // - Inputs: none
@@ -298,7 +288,6 @@ void Code::printKey() const
 
     cout << key << endl;
 }
-
 
 class Mastermind
 {
@@ -324,7 +313,6 @@ private:
     int calculateTries(const int length, const int range) const;
 };
 
-
 Mastermind::Mastermind()
 {
     int n, m;
@@ -343,13 +331,11 @@ Mastermind::Mastermind()
     secretCode = temp;
 }
 
-
 Mastermind::Mastermind(int n, int m)
     : secretCode(n, m)
 {
     numTries = calculateTries(n, m);
 }
-
 
 int Mastermind::calculateTries(const int length, const int range) const
 // Compute the number of tries based on length and range
@@ -382,7 +368,6 @@ int Mastermind::calculateTries(const int length, const int range) const
         
     return constant * multiplier;
 }
-
 
 void Mastermind::start()
 // Start the mastermind game
@@ -427,7 +412,6 @@ void Mastermind::start()
     cout << "You ran out of guesses." << endl;
 } // end start
 
-
 int main()
 // Test function for Code class
 {
@@ -445,3 +429,4 @@ int main()
 
     return 0;
 }
+
