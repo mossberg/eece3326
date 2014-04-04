@@ -64,7 +64,7 @@ void dfsAddEdges(graph &g, int current, graph &sf)
 }
 
 
- /* global::dfsCyclic(graph, current, prev)
+/* global::dfsCyclic(graph, current, prev)
  * - visit current
  * - getNeighbors
  * - somehow remove prev from neighbors
@@ -80,11 +80,20 @@ void dfsCyclic(graph &g, int current, int prev, bool &flag)
     vector<int> neighbors = getNeighbors(g, current);
 
     // remove prev from neighbors
-    int index = 0;
-    for (int k = 0; k < (int) neighbors.size(); k++)
-        if (neighbors[k] == prev)
-            index = k;
-    neighbors.erase(neighbors.begin() + index - 1);
+    // make sure neighbors is not empty so we done erase from empty vector
+    if (prev != NONE && !neighbors.empty())
+    {
+        int index = 0;
+        for (int k = 0; k < (int) neighbors.size(); k++)
+        {
+            if (neighbors[k] == prev)
+                index = k;
+        }
+
+        // at some index, it is the (index + 1)th element
+        // so just have to do .begin() + index
+        neighbors.erase(neighbors.begin() + index);
+    }
 
     for (int i = 0; i < (int) neighbors.size(); i++)
     {
@@ -128,8 +137,10 @@ bool isCyclic(graph &g)
     g.clearVisit();
     bool flag = false;
     int start = 0;
-    int prev = start;
+    int prev = NONE;
+
     dfsCyclic(g, start, prev, flag);
+
     return flag;
 }
 
@@ -220,10 +231,6 @@ int main()
       bool cyclic;
 
       connected = isConnected(g);
-
-      if (connected)
-          cout << "Connected." << endl;
-/*
       cyclic = isCyclic(g);
 
       if (connected)
@@ -238,6 +245,7 @@ int main()
 
       cout << endl;
      
+/*
       cout << "Finding spanning forest" << endl;
 
       // Initialize an empty graph to contain the spanning forest
