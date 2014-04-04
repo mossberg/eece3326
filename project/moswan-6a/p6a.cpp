@@ -44,6 +44,18 @@ vector<int> getNeighbors(graph &g, int current)
     return neighbors;
 }
 
+void dfs(graph &g, int current)
+// generic depth first search traversal
+{
+    g.visit(current);
+    vector<int> neighbors = getNeighbors(g, current);
+    for (int i = 0; i < (int) neighbors.size(); i++)
+    {
+        if (!g.isVisited(neighbors[i]))
+            dfs(g, neighbors[i]);
+    }
+}
+
 /* global::dfsAddEdges(graph, current node, sf)
  * - visit current node
  * - getNeighbors(graph, current node): return vector
@@ -106,18 +118,6 @@ void dfsCyclic(graph &g, int current, int prev, bool &flag)
     }
 }
 
-void dfs(graph &g, int current)
-// generic depth first search traversal
-{
-    g.visit(current);
-    vector<int> neighbors = getNeighbors(g, current);
-    for (int i = 0; i < (int) neighbors.size(); i++)
-    {
-        if (!g.isVisited(neighbors[i]))
-            dfs(g, neighbors[i]);
-    }
-}
-
 bool isCyclic(graph &g)
 // Returns true if the graph g contains a cycle.  Otherwise, returns false.
 /* clear all visits
@@ -139,13 +139,19 @@ bool isCyclic(graph &g)
 void findSpanningForest(graph &g, graph &sf)
 // Create a graph sf that contains a spanning forest on the graph g.  
 /* clear all visits
- * call dfsAddEdges to create the edges
+ * loop through nodes and find all trees in forest
+ * - call dfsAddEdges to create the edges
  */
 {
     g.clearVisit();
-    int start = 0;
 
-    dfsAddEdges(g, start, sf);
+    // if a node is not visited, call dfsAddEdges on it
+    // to create a tree with the node as the start
+    for (int i = 0; i < sf.numNodes(); i++)
+    {
+        if (!sf.isVisited(i))
+            dfsAddEdges(g, i, sf);
+    }
 }
 
 bool isConnected(graph &g)
@@ -180,7 +186,7 @@ int main()
    
    // fileName = "graph1.txt";
 
-   cout << "Enter filename: ";
+   cout << "Enter full filename: ";
    cin >> fileName;
    
    fin.open(fileName.c_str());
