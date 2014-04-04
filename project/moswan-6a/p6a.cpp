@@ -20,6 +20,7 @@
 using namespace std;
 
 int const NONE = -1;  // Used to represent a node that does not exist
+string temp;    // for testing
 
 /*
  * global::getNeighbors(graph, current node)
@@ -101,7 +102,7 @@ void dfs(graph &g, int current)
     for (int i = 0; i < (int) neighbors.size(); i++)
     {
         if (!g.isVisited(neighbors[i]))
-            dfs(g, current);
+            dfs(g, neighbors[i]);
     }
 }
 
@@ -188,7 +189,7 @@ bool isConnected(graph &g)
 
 int main()
 {
-   char x;
+   //char x;
    ifstream fin;
    stack <int> moves;
    string fileName;
@@ -209,28 +210,31 @@ int main()
    }
 
    try
-
    {
       cout << "Reading graph" << endl;
       graph g(fin);
 
       cout << g;
-        
+
       bool connected;
       bool cyclic;
 
       connected = isConnected(g);
+
+      if (connected)
+          cout << "Connected." << endl;
+/*
       cyclic = isCyclic(g);
 
       if (connected)
-     cout << "Graph is connected" << endl;
+          cout << "Graph is connected" << endl;
       else
-     cout << "Graph is not connected" << endl;
+          cout << "Graph is not connected" << endl;
 
       if (cyclic)
-     cout << "Graph contains a cycle" << endl;
+          cout << "Graph contains a cycle" << endl;
       else
-     cout << "Graph does not contain a cycle" << endl;
+          cout << "Graph does not contain a cycle" << endl;
 
       cout << endl;
      
@@ -250,16 +254,17 @@ int main()
       cyclic = isCyclic(sf);
 
       if (connected)
-     cout << "Spanning forest is connected" << endl;
+          cout << "Spanning forest is connected" << endl;
       else
-     cout << "Spanning forest is not connected" << endl;
+          cout << "Spanning forest is not connected" << endl;
 
       if (cyclic)
-     cout << "Spanning forest contains a cycle" << endl;
+          cout << "Spanning forest contains a cycle" << endl;
       else
-     cout << "Spanning forest does not contain a cycle" << endl;
+          cout << "Spanning forest does not contain a cycle" << endl;
 
       cout << endl;
+*/
    }    
    catch (indexRangeError &ex) 
    { 
