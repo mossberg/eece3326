@@ -2,4 +2,7 @@
 *.o
 *.out
 *.dSYM
-program
+*.swp
+p*a
+p*b
+
