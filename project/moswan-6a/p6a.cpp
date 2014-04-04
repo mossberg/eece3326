@@ -178,10 +178,10 @@ int main()
    // Read the name of the graph from the keyboard or
    // hard code it here for testing.
    
-   fileName = "graph1.txt";
+   // fileName = "graph1.txt";
 
-   //   cout << "Enter filename" << endl;
-   //   cin >> fileName;
+   cout << "Enter filename: ";
+   cin >> fileName;
    
    fin.open(fileName.c_str());
    if (!fin)
