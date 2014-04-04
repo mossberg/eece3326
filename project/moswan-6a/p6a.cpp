@@ -1,4 +1,10 @@
-/* TODO:
+/* Project 6a
+ * Mark Mossberg, Yufeng Wang
+ * 4/7/14
+ *
+ * Contains _______
+ *
+ * Compiled on Mac OS X 10.9 using g++
  */
 
 // Project 6
@@ -20,14 +26,12 @@
 using namespace std;
 
 int const NONE = -1;  // Used to represent a node that does not exist
-string temp;    // for testing
 
-/*
- * global::getNeighbors(graph, current node)
- *  - loop through numNodes
- *  - check isEdge
- *  - push into vector
- *  - return vector
+/* global::getNeighbors(graph, current node)
+ * - loop through numNodes
+ * - check isEdge
+ * - push into vector
+ * - return vector
  */
 vector<int> getNeighbors(graph &g, int current)
 {
@@ -40,11 +44,10 @@ vector<int> getNeighbors(graph &g, int current)
     return neighbors;
 }
 
-
 /* global::dfsAddEdges(graph, current node, sf)
- *  - visit current node
- *  - getNeighbors(graph, current node): return vector
- *  - for each neighbor
+ * - visit current node
+ * - getNeighbors(graph, current node): return vector
+ * - for each neighbor
  *      - check isVisited
  *      - addEdge
  *      - call dfsAddEdges
@@ -64,16 +67,14 @@ void dfsAddEdges(graph &g, int current, graph &sf)
     }
 }
 
-
 /* global::dfsCyclic(graph, current, prev)
  * - visit current
  * - getNeighbors
- * - somehow remove prev from neighbors
+ * - remove prev from neighbors
  * - for each neighbor
  *   - if isVisited -> return false, theres a cycle
  *      - reason: if is neighbor, we know theres an edge, and if isVisited, theres cycle
  *   - else -> call dfsCyclic(graph, neighbor[i], current)
- *
  */
 void dfsCyclic(graph &g, int current, int prev, bool &flag)
 {
@@ -81,7 +82,7 @@ void dfsCyclic(graph &g, int current, int prev, bool &flag)
     vector<int> neighbors = getNeighbors(g, current);
 
     // remove prev from neighbors
-    // make sure neighbors is not empty so we done erase from empty vector
+    // make sure neighbors is not empty so we dont erase from empty vector
     if (prev != NONE && !neighbors.empty())
     {
         int index = 0;
@@ -106,6 +107,7 @@ void dfsCyclic(graph &g, int current, int prev, bool &flag)
 }
 
 void dfs(graph &g, int current)
+// generic depth first search traversal
 {
     g.visit(current);
     vector<int> neighbors = getNeighbors(g, current);
@@ -116,23 +118,12 @@ void dfs(graph &g, int current)
     }
 }
 
-
 bool isCyclic(graph &g)
 // Returns true if the graph g contains a cycle.  Otherwise, returns false.
-/*
- * clear all visits
+/* clear all visits
+ * use a flag for detecting cycles
  * call dfsCyclic
- * return w/e dfs returns
- *
- * bool global::dfsCyclic(graph, current, prev)
- * - visit current
- * - getNeighbors
- * - somehow remove prev from neighbors
- * - for each neighbor
- *   - if isVisited -> return false, theres a cycle
- *      - reason: if is neighbor, we know theres an edge, and if isVisited, theres cycle
- *   - else -> call dfsCyclic(graph, neighbor[i], current)
- *
+ * return the flag
  */
 {
     g.clearVisit();
@@ -147,23 +138,8 @@ bool isCyclic(graph &g)
 
 void findSpanningForest(graph &g, graph &sf)
 // Create a graph sf that contains a spanning forest on the graph g.  
-/*
- * clear all visits before calling dfsAddEdges
- * global::dfsAddEdges(graph, current node, sf)
- *  - visit current node
- *  - getNeighbors(graph, current node): return vector
- *  - for each neighbor
- *      - check isVisited
- *      - addEdge
- *      - call dfsAddEdges
- *  
- *  - doing function, no returns
- *
- * global::getNeighbors(graph, current node)
- *  - loop through numNodes
- *  - check isEdge
- *  - push into vector
- *  - return vector
+/* clear all visits
+ * call dfsAddEdges to create the edges
  */
 {
     g.clearVisit();
@@ -174,11 +150,10 @@ void findSpanningForest(graph &g, graph &sf)
 
 bool isConnected(graph &g)
 // Returns true if the graph g is connected.  Otherwise returns false.
-/*
- * clear all visits
+/* clear all visits
  * call generic dfs(graph, current node)
  * loop through nodes and check isVisited
- * - if one is false, return false
+ * - if one is not visited, parts of graph not connected, return false
  * - otherwise, true
  */
 {
@@ -192,8 +167,6 @@ bool isConnected(graph &g)
     }
     return true;
 }
-
-
 
 int main()
 {
