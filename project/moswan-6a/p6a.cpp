@@ -166,12 +166,8 @@ void findSpanningForest(graph &g, graph &sf)
  */
 {
     g.clearVisit();
-
-    // copy over nodes to sf
-    for (int i = 0; i < g.numNodes(); i++)
-        sf.addNode(g.getNode(i));
-
     int start = 0;
+
     dfsAddEdges(g, start, sf);
 }
 
@@ -245,7 +241,6 @@ int main()
 
       cout << endl;
      
-/*
       cout << "Finding spanning forest" << endl;
 
       // Initialize an empty graph to contain the spanning forest
@@ -272,7 +267,6 @@ int main()
           cout << "Spanning forest does not contain a cycle" << endl;
 
       cout << endl;
-*/
    }    
    catch (indexRangeError &ex) 
    { 
