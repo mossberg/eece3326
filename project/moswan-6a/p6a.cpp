@@ -58,6 +58,7 @@ void dfsAddEdges(graph &g, int current, graph &sf)
         if (!g.isVisited(neighbors[i]))
         {
             sf.addEdge(current, neighbors[i], g.getEdgeWeight(current, neighbors[i]));
+            sf.addEdge(neighbors[i], current, g.getEdgeWeight(neighbors[i], current));
             dfsAddEdges(g, neighbors[i], sf);
         }
     }
