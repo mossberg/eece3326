@@ -12,6 +12,53 @@
 // Assumes that directed edges in both directions (x,y) and (y,x) are present in the input file.
 //
 
+/* Planning
+void prim(graph &g, graph &sf)
+- declare: minCost = 100, marked, unmarked && set to high values
+- unmark all nodes and edges
+- mark start (0)
+- for i = 0 to # edges (which is numNodes - 1)
+
+    - for every node i in graph
+        if isMarked(i)
+            for every  node j in graph
+                if !isMarked(j) && isEdge(i, j) && getEdgeWeight < minCost
+                    minCost = edgeWeight
+                    marked = i
+                    unmarked = j;
+    - mark edge(marked, unmarked)
+    - mark(unmarked)
+    - reset to high values
+    
+typedef struct edgepair {
+    int i;
+    int j;
+    int cost;
+} edgepair;
+
+void kruskal(graph &g, graph &sf)
+- declare priority queue: queue<edgepair> q
+
+queue<edgepair> q = getEdges(graph &g)
+- unmark all edges
+- while q not empty
+    - get top of queue
+    - add edge
+    - if isCyclic
+        remove edge
+    else
+        mark edge
+
+getEdges(graph g)
+loop through all nodes i
+    loop through all nodes again j
+        check if at least one node is unmarked and there is an edge between the two
+            get edgepair 
+            add to queue
+            mark i and j
+return queue
+*/
+
 #include <iostream>
 #include <limits.h>
 #include "d_except.h"
@@ -26,6 +73,13 @@
 using namespace std;
 
 int const NONE = -1;  // Used to represent a node that does not exist
+int const HIGH = 100;   // high edge weight
+
+typedef struct edgepair {
+    int i;
+    int j;
+    int cost;
+} edgepair;
 
 /* global::getNeighbors(graph, current node)
  * - loop through numNodes
@@ -174,6 +228,151 @@ bool isConnected(graph &g)
     return true;
 }
 
+/*
+void prim(graph &g, graph &sf)
+- declare: minCost = 100, marked, unmarked && set to high values
+- unmark all nodes and edges
+- mark start (0)
+- for i = 0 to # edges (which is numNodes - 1)
+
+    - for every node i in graph
+        if isMarked(i)
+            for every  node j in graph
+                if !isMarked(j) && isEdge(i, j) && getEdgeWeight < minCost
+                    minCost = edgeWeight
+                    marked = i
+                    unmarked = j;
+    - mark edge(marked, unmarked)
+    - mark(unmarked)
+    - reset to high values
+*/
+
+void prim(graph &g, graph &sf)
+{
+    // declare: minCost = 100, marked, unmarked && set to high values
+    int minCost = HIGH;
+    int marked, unmarked;
+    
+    // unmark all nodes and edges
+    g.clearMark();
+    
+    //mark start (0)
+    g.mark(0);
+    
+    for (int e = 0; e < g.numNodes() - 1; e++)  // edges
+    {
+        // find the least edge
+        for (int i = 0; i < g.numNodes() ; i++)
+        {
+            if (g.isMarked(i))
+            {
+                for (int j = 0; j < g.numNodes(); j++)
+                {
+                    if (!g.isMarked(j) && g.isEdge(i, j) && g.getEdgeWeight(i, j) < minCost) 
+                    {
+                        minCost = g.getEdgeWeight(i,j);
+                        marked = i;
+                        unmarked = j;
+                    }
+                }
+            }
+        }
+        // mark edge(marked, unmarked)
+        g.mark(marked, unmarked);
+        sf.addEdge(marked, unmarked, g.getEdgeWeight(marked, unmarked));
+        sf.addEdge(unmarked, marked, g.getEdgeWeight(unmarked, marked));
+        
+        // mark(unmarked)
+        g.mark(unmarked);
+        
+        // reset to high values
+        minCost = HIGH;
+    }
+
+}
+
+/*
+typedef struct edgepair {
+    int i;
+    int j;
+    int cost;
+} edgepair;
+
+void kruskal(graph &g, graph &sf)
+- declare priority queue: queue<edgepair> q
+
+queue<edgepair> q = getEdges(graph &g)
+- unmark all edges
+- while q not empty
+    - get top of queue
+    - add edge
+    - if isCyclic
+        remove edge
+    else
+        mark edge
+
+getEdges(graph g)
+loop through all nodes i
+    loop through all nodes again j
+        check if at least one node is unmarked and there is an edge between the two
+            get edgepair 
+            add to queue
+            mark i and j
+return queue
+*/
+
+class compare {
+    public:
+    bool operator() (edgepair &p1, edgepair &p2) {
+        if (p1.cost < p2.cost)
+            return true;
+        else 
+            return false;
+    }
+};
+
+typedef priority_queue<edgepair, vector<edgepair>, compare> pqueue;
+
+pqueue getEdges(graph &g)
+{
+    pqueue edges;
+    for (int i = 0; i < g.numNodes(); i++)
+    {
+        for (int j = 0; j < g.numNodes(); j++)
+        {
+            if ((g.isMarked(i) || g.isMarked(j) ) && g.isEdge(i, j))
+            {
+                edgepair pair = {i, j, g.getEdgeWeight(i, j)};
+                edges.push(pair);
+                g.mark(i);
+                g.mark(j);
+            }
+        }
+    }
+    return edges;
+}
+
+
+void kruskal(graph &g, graph &sf)
+{
+    pqueue edges = getEdges(g);
+    g.clearMark();
+    while (!edges.empty())
+    {
+        edgepair pair = edges.top();
+        edges.pop();
+        
+        sf.addEdge(pair.i, pair.j, pair.cost);
+        sf.addEdge(pair.j, pair.i, pair.cost);
+        if (isCyclic(sf))
+        {
+            sf.removeEdge(pair.i, pair.j);
+            sf.removeEdge(pair.j, pair.i);
+        }
+    }
+}
+
+
 int main()
 {
    //char x;
@@ -245,7 +444,45 @@ int main()
           cout << "Spanning forest contains a cycle" << endl;
       else
           cout << "Spanning forest does not contain a cycle" << endl;
+          
+    
+        graph sf1(g.numNodes());
+        prim(g, sf1);
+        cout << endl << "Prim" << endl;
+        cout << sf1;
+        cout << "sf1 weight: " << sf1.getTotalEdgeWeight()/2 << endl;
+        
+      connected = isConnected(sf1);
+      cyclic = isCyclic(sf1);
 
+      if (connected)
+          cout << "sf1 prim is connected" << endl;
+      else
+          cout << "sf1 prim is not connected" << endl;
+
+      if (cyclic)
+          cout << "sf1 prim contains a cycle" << endl;
+      else
+          cout << "sf1 prim does not contain a cycle" << endl;
+
+        graph sf2(g.numNodes());
+        prim(g, sf2);
+        cout << endl << "Kruskal" << endl;
+        cout << sf2;
+        cout << "sf2 weight: " << sf2.getTotalEdgeWeight()/2 << endl;
+        
+      connected = isConnected(sf2);
+      cyclic = isCyclic(sf2);
+
+      if (connected)
+          cout << "sf2 kruskal is connected" << endl;
+      else
+          cout << "sf2 kruskal is not connected" << endl;
+
+      if (cyclic)
+          cout << "sf2 kruskal contains a cycle" << endl;
+      else
+          cout << "sf2 kruskal does not contain a cycle" << endl;
       cout << endl;
    }    
    catch (indexRangeError &ex) 
