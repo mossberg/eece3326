@@ -228,38 +228,18 @@ bool isConnected(graph &g)
     return true;
 }
 
-/*
 void prim(graph &g, graph &sf)
-- declare: minCost = 100, marked, unmarked && set to high values
-- unmark all nodes and edges
-- mark start (0)
-- for i = 0 to # edges (which is numNodes - 1)
-
-    - for every node i in graph
-        if isMarked(i)
-            for every  node j in graph
-                if !isMarked(j) && isEdge(i, j) && getEdgeWeight < minCost
-                    minCost = edgeWeight
-                    marked = i
-                    unmarked = j;
-    - mark edge(marked, unmarked)
-    - mark(unmarked)
-    - reset to high values
-*/
-
-void prim(graph &g, graph &sf)
+// from weighted graph g, set sf to minimum spanning forest
+// only add (nodes - 1) edges to ensure no cycles and no disconnected components
+// finds the minimum cost edge from a marked node to an unmarked node and adds it
 {
-    // declare: minCost = 100, marked, unmarked && set to high values
     int minCost = HIGH;
     int marked, unmarked;
     
-    // unmark all nodes and edges
     g.clearMark();
+    g.mark(0);  // start by marking start
     
-    //mark start (0)
-    g.mark(0);
-    
-    for (int e = 0; e < g.numNodes() - 1; e++)  // edges
+    for (int e = 0; e < g.numNodes() - 1; e++)  // loop through number of edges
     {
         // find the least edge
         for (int i = 0; i < g.numNodes() ; i++)
@@ -277,51 +257,22 @@ void prim(graph &g, graph &sf)
                 }
             }
         }
-        // mark edge(marked, unmarked)
-        g.mark(marked, unmarked);
+
+        g.mark(marked, unmarked);   // mark edge
+
+        // add both edges to create undirected edge
         sf.addEdge(marked, unmarked, g.getEdgeWeight(marked, unmarked));
         sf.addEdge(unmarked, marked, g.getEdgeWeight(unmarked, marked));
-        
-        // mark(unmarked)
-        g.mark(unmarked);
-        
-        // reset to high values
-        minCost = HIGH;
-    }
 
+        g.mark(unmarked);       // mark the unmarked node
+        
+        minCost = HIGH;     // reset to high values
+    }
 }
 
-/*
-typedef struct edgepair {
-    int i;
-    int j;
-    int cost;
-} edgepair;
-
-void kruskal(graph &g, graph &sf)
-- declare priority queue: queue<edgepair> q
-
-queue<edgepair> q = getEdges(graph &g)
-- unmark all edges
-- while q not empty
-    - get top of queue
-    - add edge
-    - if isCyclic
-        remove edge
-    else
-        mark edge
-
-getEdges(graph g)
-loop through all nodes i
-    loop through all nodes again j
-        check if at least one node is unmarked and there is an edge between the two
-            get edgepair 
-            add to queue
-            mark i and j
-return queue
-*/
-
 class compare {
+// class for priority queue to use for sorting elements
+// overloaded operator to return true to sort first item first, false otherwise
     public:
     bool operator() (edgepair &p1, edgepair &p2) {
         if (p1.cost < p2.cost)
@@ -331,9 +282,12 @@ class compare {
     }
 };
 
+// use an alias for priority queue that uses vector as the underlying container type
 typedef priority_queue<edgepair, vector<edgepair>, compare> pqueue;
 
 pqueue getEdges(graph &g)
+// iterate through graph and construct a priority queue with minimum cost
+// edges sorted first
 {
     pqueue edges;
     for (int i = 0; i < g.numNodes(); i++)
@@ -352,8 +306,11 @@ pqueue getEdges(graph &g)
     return edges;
 }
 
-
 void kruskal(graph &g, graph &sf)
+// from weighted graph g, set sf to minimum spanning forest
+// uses a priority queue with edges sorted by minimum weight
+// for every edge, add to sf, but if it creates cycle, then
+// remove it and move to next edge
 {
     pqueue edges = getEdges(g);
     g.clearMark();
@@ -362,8 +319,10 @@ void kruskal(graph &g, graph &sf)
         edgepair pair = edges.top();
         edges.pop();
         
+        // add both edges to create undirected edges
         sf.addEdge(pair.i, pair.j, pair.cost);
         sf.addEdge(pair.j, pair.i, pair.cost);
+
         if (isCyclic(sf))
         {
             sf.removeEdge(pair.i, pair.j);
@@ -372,126 +331,136 @@ void kruskal(graph &g, graph &sf)
     }
 }
 
-
+string temp;    // for testing
 int main()
 {
-   //char x;
-   ifstream fin;
-   stack <int> moves;
-   string fileName;
-   
-   // Read the name of the graph from the keyboard or
-   // hard code it here for testing.
-   
-   // fileName = "graph1.txt";
-
-   cout << "Enter full filename: ";
-   cin >> fileName;
-   
-   fin.open(fileName.c_str());
-   if (!fin)
-   {
-      cerr << "Cannot open " << fileName << endl;
-      exit(1);
-   }
-
-   try
-   {
-      cout << "Reading graph" << endl;
-      graph g(fin);
-
-      cout << g;
-
-      bool connected;
-      bool cyclic;
-
-      connected = isConnected(g);
-      cyclic = isCyclic(g);
-
-      if (connected)
-          cout << "Graph is connected" << endl;
-      else
-          cout << "Graph is not connected" << endl;
-
-      if (cyclic)
-          cout << "Graph contains a cycle" << endl;
-      else
-          cout << "Graph does not contain a cycle" << endl;
-
-      cout << endl;
-     
-      cout << "Finding spanning forest" << endl;
-
-      // Initialize an empty graph to contain the spanning forest
-      graph sf(g.numNodes());
-      findSpanningForest(g,sf);
-
-      cout << endl;
-
-      cout << sf;
-
-      cout << "Spanning forest weight: " << sf.getTotalEdgeWeight()/2 << endl;
-
-      connected = isConnected(sf);
-      cyclic = isCyclic(sf);
-
-      if (connected)
-          cout << "Spanning forest is connected" << endl;
-      else
-          cout << "Spanning forest is not connected" << endl;
-
-      if (cyclic)
-          cout << "Spanning forest contains a cycle" << endl;
-      else
-          cout << "Spanning forest does not contain a cycle" << endl;
-          
+    //char x;
+    ifstream fin;
+    stack <int> moves;
+    string fileName;
     
+    // Read the name of the graph from the keyboard or
+    // hard code it here for testing.
+    
+    // fileName = "graph1.txt";
+    
+    cout << "Enter full filename: ";
+    cin >> fileName;
+    
+    fin.open(fileName.c_str());
+    if (!fin)
+    {
+        cerr << "Cannot open " << fileName << endl;
+        exit(1);
+    }
+    
+    try
+    {
+        cout << "Reading graph" << endl;
+        graph g(fin);
+        
+        cout << g;
+        
+        bool connected;
+        bool cyclic;
+        
+        connected = isConnected(g);
+        cyclic = isCyclic(g);
+        
+        if (connected)
+            cout << "Graph is connected" << endl;
+        else
+            cout << "Graph is not connected" << endl;
+        
+        if (cyclic)
+            cout << "Graph contains a cycle" << endl;
+        else
+            cout << "Graph does not contain a cycle" << endl;
+        
+        cout << endl;
+        
+        getline(cin, temp);   // for testing
+        getline(cin, temp);   // for testing
+        
+        cout << "Finding spanning forest" << endl;
+        
+        // Initialize an empty graph to contain the spanning forest
+        graph sf(g.numNodes());
+        findSpanningForest(g,sf);
+        
+        cout << endl;
+        
+        cout << sf;
+        
+        cout << "Spanning forest weight: " << sf.getTotalEdgeWeight()/2 << endl;
+        
+        connected = isConnected(sf);
+        cyclic = isCyclic(sf);
+        
+        if (connected)
+            cout << "Spanning forest is connected" << endl;
+        else
+            cout << "Spanning forest is not connected" << endl;
+        
+        if (cyclic)
+            cout << "Spanning forest contains a cycle" << endl;
+        else
+            cout << "Spanning forest does not contain a cycle" << endl;
+        
+        getline(cin, temp);   // for testing
+        
         graph sf1(g.numNodes());
         prim(g, sf1);
         cout << endl << "Prim" << endl;
         cout << sf1;
-        cout << "sf1 weight: " << sf1.getTotalEdgeWeight()/2 << endl;
+        cout << "sf1 prim weight: " << sf1.getTotalEdgeWeight()/2 << endl;
         
-      connected = isConnected(sf1);
-      cyclic = isCyclic(sf1);
-
-      if (connected)
-          cout << "sf1 prim is connected" << endl;
-      else
-          cout << "sf1 prim is not connected" << endl;
-
-      if (cyclic)
-          cout << "sf1 prim contains a cycle" << endl;
-      else
-          cout << "sf1 prim does not contain a cycle" << endl;
+        connected = isConnected(sf1);
+        cyclic = isCyclic(sf1);
+        
+        if (connected)
+            cout << "sf1 prim is connected" << endl;
+        else
+            cout << "sf1 prim is not connected" << endl;
+        
+        if (cyclic)
+            cout << "sf1 prim contains a cycle" << endl;
+        else
+            cout << "sf1 prim does not contain a cycle" << endl;
+        
+        getline(cin, temp);   // for testing
 
         graph sf2(g.numNodes());
         prim(g, sf2);
         cout << endl << "Kruskal" << endl;
         cout << sf2;
-        cout << "sf2 weight: " << sf2.getTotalEdgeWeight()/2 << endl;
+        cout << "sf2 kruskal weight: " << sf2.getTotalEdgeWeight()/2 << endl;
         
-      connected = isConnected(sf2);
-      cyclic = isCyclic(sf2);
+        connected = isConnected(sf2);
+        cyclic = isCyclic(sf2);
+        
+        if (connected)
+            cout << "sf2 kruskal is connected" << endl;
+        else
+            cout << "sf2 kruskal is not connected" << endl;
+        
+        if (cyclic)
+            cout << "sf2 kruskal contains a cycle" << endl;
+        else
+            cout << "sf2 kruskal does not contain a cycle" << endl;
 
-      if (connected)
-          cout << "sf2 kruskal is connected" << endl;
-      else
-          cout << "sf2 kruskal is not connected" << endl;
+        cout << endl;
 
-      if (cyclic)
-          cout << "sf2 kruskal contains a cycle" << endl;
-      else
-          cout << "sf2 kruskal does not contain a cycle" << endl;
-      cout << endl;
-   }    
-   catch (indexRangeError &ex) 
-   { 
-      cout << ex.what() << endl; exit(1);
-   }
-   catch (rangeError &ex)
-   {
-      cout << ex.what() << endl; exit(1);
-   }
+        getline(cin, temp);   // for testing
+        cout << "Done." << endl;
+    }    
+    catch (indexRangeError &ex) 
+    { 
+        cout << ex.what() << endl; exit(1);
+    }
+    catch (rangeError &ex)
+    {
+        cout << ex.what() << endl; exit(1);
+    }
 }
 
