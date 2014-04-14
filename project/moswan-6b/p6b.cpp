@@ -303,7 +303,7 @@ class compare {
 // overloaded operator to return true to sort first item first, false otherwise
     public:
     bool operator() (edgepair &p1, edgepair &p2) {
-        if (p1.cost < p2.cost)
+        if (p1.cost > p2.cost)
             return true;
         else 
             return false;
@@ -320,14 +320,14 @@ pqueue getEdges(graph &g)
     pqueue edges;
     for (int i = 0; i < g.numNodes(); i++)
     {
+        g.mark(i);
+        
         for (int j = 0; j < g.numNodes(); j++)
         {
-            if ((g.isMarked(i) || g.isMarked(j) ) && g.isEdge(i, j))
+            if (g.isMarked(i) && !g.isMarked(j) && g.isEdge(i, j))
             {
                 edgepair pair = {i, j, g.getEdgeWeight(i, j)};
                 edges.push(pair);
-                g.mark(i);
-                g.mark(j);
             }
         }
     }
@@ -340,8 +340,8 @@ void kruskal(graph &g, graph &sf)
 // for every edge, add to sf, but if it creates cycle, then
 // remove it and move to next edge
 {
-    pqueue edges = getEdges(g);
     g.clearMark();
+    pqueue edges = getEdges(g);
     while (!edges.empty())
     {
         edgepair pair = edges.top();
@@ -478,7 +478,7 @@ int main()
         getline(cin, temp);   // for testing
 
         graph sf2(g.numNodes());
-        prim(g, sf2);
+        kruskal(g, sf2);
         cout << endl << "Kruskal" << endl;
         cout << sf2;
         cout << "sf2 kruskal weight: " << sf2.getTotalEdgeWeight()/2 << endl;
