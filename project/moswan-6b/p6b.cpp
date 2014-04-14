@@ -7,8 +7,6 @@
  * Compiled on Mac OS X 10.9 using g++
  */
  
-// iscyclic, is connected, prim
-
 // Project 6
 //
 // Assumes that directed edges in both directions (x,y) and (y,x) are present in the input file.
@@ -74,22 +72,19 @@ return queue
 
 using namespace std;
 
-int const NONE = -1;  // Used to represent a node that does not exist
+int const NONE = -1;    // Used to represent a node that does not exist
 int const HIGH = 100;   // high edge weight
 
+// struct to hold edge nodes and the edge weight
 typedef struct edgepair {
     int i;
     int j;
     int cost;
 } edgepair;
 
-/* global::getNeighbors(graph, current node)
- * - loop through numNodes
- * - check isEdge
- * - push into vector
- * - return vector
- */
 vector<int> getNeighbors(graph &g, int current)
+// loops through nodes and check if there is an edge between
+// current and node, returns a vector of neighboring nodes
 {
     vector<int> neighbors;
     for (int i = 0; i < g.numNodes(); i++)
@@ -112,15 +107,8 @@ void dfs(graph &g, int current)
     }
 }
 
-/* global::dfsAddEdges(graph, current node, sf)
- * - visit current node
- * - getNeighbors(graph, current node): return vector
- * - for each neighbor
- *      - check isVisited
- *      - addEdge
- *      - call dfsAddEdges
- */
 void dfsAddEdges(graph &g, int current, graph &sf)
+// depth first search to visit all nodes and add edges to unvisited nodes
 {
     g.visit(current);
     vector<int> neighbors = getNeighbors(g, current);
@@ -135,16 +123,11 @@ void dfsAddEdges(graph &g, int current, graph &sf)
     }
 }
 
-/* global::dfsCyclic(graph, current, prev)
- * - visit current
- * - getNeighbors
- * - remove prev from neighbors
- * - for each neighbor
- *   - if isVisited -> return false, theres a cycle
- *      - reason: if is neighbor, we know theres an edge, and if isVisited, theres cycle
- *   - else -> call dfsCyclic(graph, neighbor[i], current)
- */
 bool dfsCyclic(graph &g, int current, int prev)
+// depth first search to find cycles in graph
+// first removes the preceeding node from vector of neighbors
+// then if there is a visited node neighbor, there is a cycle
+// returns true for there is a cycle, otherwise false
 {
     g.visit(current);
     vector<int> neighbors = getNeighbors(g, current);
@@ -170,18 +153,14 @@ bool dfsCyclic(graph &g, int current, int prev)
         if (g.isVisited(neighbors[i]))
             return true;
         else if (dfsCyclic(g, neighbors[i], current))
-            return true; // can we put the function call inside the if
+            return true;
     }
     return false; // ran through all neighbors and no cycles
 }
 
 bool isCyclic(graph &g)
 // Returns true if the graph g contains a cycle.  Otherwise, returns false.
-/* clear all visits
- * use a flag for detecting cycles
- * call dfsCyclic
- * return the flag
- */
+// checks all spanning tree components in the graph
 {
     g.clearVisit();
     int prev = NONE;
@@ -198,10 +177,6 @@ bool isCyclic(graph &g)
 
 void findSpanningForest(graph &g, graph &sf)
 // Create a graph sf that contains a spanning forest on the graph g.  
-/* clear all visits
- * loop through nodes and find all trees in forest
- * - call dfsAddEdges to create the edges
- */
 {
     g.clearVisit();
 
@@ -216,12 +191,6 @@ void findSpanningForest(graph &g, graph &sf)
 
 bool isConnected(graph &g)
 // Returns true if the graph g is connected.  Otherwise returns false.
-/* clear all visits
- * call generic dfs(graph, current node)
- * loop through nodes and check isVisited
- * - if one is not visited, parts of graph not connected, return false
- * - otherwise, true
- */
 {
     g.clearVisit();
     int start = 0;
@@ -244,7 +213,7 @@ edgepair getMinEdge(graph &g)
     int marked = NONE;
     int unmarked = NONE;
     
-    // find the least edge
+    // find the minimum edge
     for (int i = 0; i < g.numNodes() ; i++)
     {
         if (g.isMarked(i))
@@ -260,14 +229,16 @@ edgepair getMinEdge(graph &g)
             }
         }
     }
+
     edgepair pair = {marked, unmarked, minCost};
     return pair;
 }
 
 void prim(graph &g, graph &sf)
 // from weighted graph g, set sf to minimum spanning forest
-// only add (nodes - 1) edges to ensure no cycles and no disconnected components
 // finds the minimum cost edge from a marked node to an unmarked node and adds it
+// loop through all nodes and if a node is not marked,
+// start adding edges with it as start
 {
     g.clearMark();
     
@@ -281,9 +252,10 @@ void prim(graph &g, graph &sf)
     
             while (pair.i != NONE && pair.j != NONE)
             {
-                g.mark(pair.i, pair.j);   // mark edge
+                // mark edge
+                g.mark(pair.i, pair.j);
                 g.mark(pair.j, pair.i);
-    
+
                 // add both edges to create undirected edge
                 sf.addEdge(pair.i, pair.j, pair.cost);
                 sf.addEdge(pair.j, pair.i, pair.cost);
@@ -293,14 +265,13 @@ void prim(graph &g, graph &sf)
                 pair = getMinEdge(g); // get next edge
             }
         }
-        else
-            continue;
+        // if node is marked, just continue
     }
 }
 
 class compare {
 // class for priority queue to use for sorting elements
-// overloaded operator to return true to sort first item first, false otherwise
+// overloaded operator to return true to sort larger item first
     public:
     bool operator() (edgepair &p1, edgepair &p2) {
         if (p1.cost > p2.cost)
@@ -315,7 +286,7 @@ typedef priority_queue<edgepair, vector<edgepair>, compare> pqueue;
 
 pqueue getEdges(graph &g)
 // iterate through graph and construct a priority queue with minimum cost
-// edges sorted first
+// only add an edgepair for edge between marked node and unmarked node
 {
     pqueue edges;
     for (int i = 0; i < g.numNodes(); i++)
@@ -336,7 +307,8 @@ pqueue getEdges(graph &g)
 
 void kruskal(graph &g, graph &sf)
 // from weighted graph g, set sf to minimum spanning forest
-// uses a priority queue with edges sorted by minimum weight
+// uses a priority queue with edges sorted from large to min weight
+// since top of queue is the back of underlying vector
 // for every edge, add to sf, but if it creates cycle, then
 // remove it and move to next edge
 {
