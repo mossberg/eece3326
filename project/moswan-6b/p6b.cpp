@@ -6,6 +6,8 @@
  *
  * Compiled on Mac OS X 10.9 using g++
  */
+ 
+// iscyclic, is connected, prim
 
 // Project 6
 //
@@ -142,7 +144,7 @@ void dfsAddEdges(graph &g, int current, graph &sf)
  *      - reason: if is neighbor, we know theres an edge, and if isVisited, theres cycle
  *   - else -> call dfsCyclic(graph, neighbor[i], current)
  */
-void dfsCyclic(graph &g, int current, int prev, bool &flag)
+bool dfsCyclic(graph &g, int current, int prev)
 {
     g.visit(current);
     vector<int> neighbors = getNeighbors(g, current);
@@ -166,10 +168,11 @@ void dfsCyclic(graph &g, int current, int prev, bool &flag)
     for (int i = 0; i < (int) neighbors.size(); i++)
     {
         if (g.isVisited(neighbors[i]))
-            flag = true;
-        else
-            dfsCyclic(g, neighbors[i], current, flag);
+            return true;
+        else if (dfsCyclic(g, neighbors[i], current))
+            return true; // can we put the function call inside the if
     }
+    return false; // ran through all neighbors and no cycles
 }
 
 bool isCyclic(graph &g)
@@ -181,13 +184,16 @@ bool isCyclic(graph &g)
  */
 {
     g.clearVisit();
-    bool flag = false;
-    int start = 0;
     int prev = NONE;
-
-    dfsCyclic(g, start, prev, flag);
-
-    return flag;
+    
+    for (int i = 0; i < g.numNodes(); i++)
+    {
+        // if node is not visited, call traversal with it as the start
+        if (!g.isVisited(i) && dfsCyclic(g, i, prev))
+            return true;
+    }
+    
+    return false;
 }
 
 void findSpanningForest(graph &g, graph &sf)
@@ -220,6 +226,7 @@ bool isConnected(graph &g)
     g.clearVisit();
     int start = 0;
     dfs(g, start);
+    
     for (int i = 0; i < g.numNodes(); i++)
     {
         if (!g.isVisited(i))
@@ -228,45 +235,66 @@ bool isConnected(graph &g)
     return true;
 }
 
+edgepair getMinEdge(graph &g)
+// iterate through whole graph and finds the edge from 
+// marked node to unmarked node with minimum weight
+// returns a struct with marked, unmarked, and weight
+{
+    int minCost = HIGH;
+    int marked = NONE;
+    int unmarked = NONE;
+    
+    // find the least edge
+    for (int i = 0; i < g.numNodes() ; i++)
+    {
+        if (g.isMarked(i))
+        {
+            for (int j = 0; j < g.numNodes(); j++)
+            {
+                if (!g.isMarked(j) && g.isEdge(i, j) && g.getEdgeWeight(i, j) < minCost) 
+                {
+                    minCost = g.getEdgeWeight(i,j);
+                    marked = i;
+                    unmarked = j;
+                }
+            }
+        }
+    }
+    edgepair pair = {marked, unmarked, minCost};
+    return pair;
+}
+
 void prim(graph &g, graph &sf)
 // from weighted graph g, set sf to minimum spanning forest
 // only add (nodes - 1) edges to ensure no cycles and no disconnected components
 // finds the minimum cost edge from a marked node to an unmarked node and adds it
 {
-    int minCost = HIGH;
-    int marked, unmarked;
-    
     g.clearMark();
-    g.mark(0);  // start by marking start
     
-    for (int e = 0; e < g.numNodes() - 1; e++)  // loop through number of edges
+    for (int n = 0; n < g.numNodes(); n++)  // loop through all nodes
     {
-        // find the least edge
-        for (int i = 0; i < g.numNodes() ; i++)
+        if (!g.isMarked(n))
         {
-            if (g.isMarked(i))
+            g.mark(n);
+
+            edgepair pair = getMinEdge(g);
+    
+            while (pair.i != NONE && pair.j != NONE)
             {
-                for (int j = 0; j < g.numNodes(); j++)
-                {
-                    if (!g.isMarked(j) && g.isEdge(i, j) && g.getEdgeWeight(i, j) < minCost) 
-                    {
-                        minCost = g.getEdgeWeight(i,j);
-                        marked = i;
-                        unmarked = j;
-                    }
-                }
+                g.mark(pair.i, pair.j);   // mark edge
+                g.mark(pair.j, pair.i);
+    
+                // add both edges to create undirected edge
+                sf.addEdge(pair.i, pair.j, pair.cost);
+                sf.addEdge(pair.j, pair.i, pair.cost);
+    
+                g.mark(pair.j);       // mark the unmarked node
+
+                pair = getMinEdge(g); // get next edge
             }
         }
-
-        g.mark(marked, unmarked);   // mark edge
-
-        // add both edges to create undirected edge
-        sf.addEdge(marked, unmarked, g.getEdgeWeight(marked, unmarked));
-        sf.addEdge(unmarked, marked, g.getEdgeWeight(unmarked, marked));
-
-        g.mark(unmarked);       // mark the unmarked node
-        
-        minCost = HIGH;     // reset to high values
+        else
+            continue;
     }
 }
 
@@ -331,6 +359,23 @@ void kruskal(graph &g, graph &sf)
     }
 }
 
+int numComponents(graph &sf)
+// given a spanning forest, finds the number of trees,
+// or connected components in that forest
+{
+    int components = 0;
+    sf.clearVisit();
+    for (int i = 0; i < sf.numNodes(); i++)
+    {
+        if (!sf.isVisited(i))
+        {
+            dfs(sf, i);
+            components++;
+        }
+    }
+    return components;
+}
+
 string temp;    // for testing
 int main()
 {
@@ -377,7 +422,7 @@ int main()
         else
             cout << "Graph does not contain a cycle" << endl;
         
-        cout << endl;
+        cout << "Graph num components: " << numComponents(g) << endl;
         
         getline(cin, temp);   // for testing
         getline(cin, temp);   // for testing
@@ -407,6 +452,7 @@ int main()
         else
             cout << "Spanning forest does not contain a cycle" << endl;
         
+        cout << "Spanning forest num components: " << numComponents(sf) << endl;
         getline(cin, temp);   // for testing
         
         graph sf1(g.numNodes());
@@ -428,6 +474,7 @@ int main()
         else
             cout << "sf1 prim does not contain a cycle" << endl;
         
+        cout << "sf1 prim num components: " << numComponents(sf1) << endl;
         getline(cin, temp);   // for testing
 
         graph sf2(g.numNodes());
@@ -449,7 +496,7 @@ int main()
         else
             cout << "sf2 kruskal does not contain a cycle" << endl;
 
-        cout << endl;
+        cout << "sf2 kruskal num components: " << numComponents(sf2) << endl;
 
         getline(cin, temp);   // for testing
         cout << "Done." << endl;
