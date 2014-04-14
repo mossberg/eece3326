@@ -381,27 +381,24 @@ int main()
         bool connected;
         bool cyclic;
         
-        connected = isConnected(g);
-        cyclic = isCyclic(g);
-        
-        if (connected)
+        if (isConnected(g))
             cout << "Graph is connected" << endl;
         else
             cout << "Graph is not connected" << endl;
         
-        if (cyclic)
+        if (isCyclic(g))
             cout << "Graph contains a cycle" << endl;
         else
             cout << "Graph does not contain a cycle" << endl;
         
         cout << "Graph num components: " << numComponents(g) << endl;
         
-        getline(cin, temp);   // for testing
-        getline(cin, temp);   // for testing
+        cout << "\nFinding spanning forest" << endl;
         
-        cout << "Finding spanning forest" << endl;
-        
-        // Initialize an empty graph to contain the spanning forest
+        /*
+         * Spanning Forest
+         */
+
         graph sf(g.numNodes());
         findSpanningForest(g,sf);
         
@@ -411,21 +408,21 @@ int main()
         
         cout << "Spanning forest weight: " << sf.getTotalEdgeWeight()/2 << endl;
         
-        connected = isConnected(sf);
-        cyclic = isCyclic(sf);
-        
-        if (connected)
+        if (isConnected(sf))
             cout << "Spanning forest is connected" << endl;
         else
             cout << "Spanning forest is not connected" << endl;
         
-        if (cyclic)
+        if (isCyclic(sf))
             cout << "Spanning forest contains a cycle" << endl;
         else
             cout << "Spanning forest does not contain a cycle" << endl;
         
         cout << "Spanning forest num components: " << numComponents(sf) << endl;
-        getline(cin, temp);   // for testing
+
+        /*
+         * Prim
+         */
         
         graph sf1(g.numNodes());
         prim(g, sf1);
@@ -433,21 +430,21 @@ int main()
         cout << sf1;
         cout << "sf1 prim weight: " << sf1.getTotalEdgeWeight()/2 << endl;
         
-        connected = isConnected(sf1);
-        cyclic = isCyclic(sf1);
-        
-        if (connected)
+        if (isConnected(sf1))
             cout << "sf1 prim is connected" << endl;
         else
             cout << "sf1 prim is not connected" << endl;
         
-        if (cyclic)
+        if (isCyclic(sf1))
             cout << "sf1 prim contains a cycle" << endl;
         else
             cout << "sf1 prim does not contain a cycle" << endl;
         
         cout << "sf1 prim num components: " << numComponents(sf1) << endl;
-        getline(cin, temp);   // for testing
+
+        /*
+         * Kruskal
+         */
 
         graph sf2(g.numNodes());
         kruskal(g, sf2);
@@ -458,20 +455,19 @@ int main()
         connected = isConnected(sf2);
         cyclic = isCyclic(sf2);
         
-        if (connected)
+        if (isConnected(sf2))
             cout << "sf2 kruskal is connected" << endl;
         else
             cout << "sf2 kruskal is not connected" << endl;
         
-        if (cyclic)
+        if (isCyclic(sf2))
             cout << "sf2 kruskal contains a cycle" << endl;
         else
             cout << "sf2 kruskal does not contain a cycle" << endl;
 
         cout << "sf2 kruskal num components: " << numComponents(sf2) << endl;
 
-        getline(cin, temp);   // for testing
-        cout << "Done." << endl;
+        cout << "\nDone." << endl;
     }    
     catch (indexRangeError &ex) 
     { 
